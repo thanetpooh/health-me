@@ -1,7 +1,11 @@
 package com.thanet.health_me.dtos;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class UserDto {
     private String name;
+
+    @NotBlank(message = "Email is required")
     private String email;
 
     

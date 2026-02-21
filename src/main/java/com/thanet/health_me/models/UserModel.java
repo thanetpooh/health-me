@@ -1,21 +1,28 @@
 package com.thanet.health_me.models;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "users")
 public class UserModel {
-    private String id;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String name;
     private String email;
+
+    public UserModel(){}
         
     public UserModel(String name, String email){
-        this.id = String.valueOf(System.currentTimeMillis());
         this.name = name;
         this.email = email;
     }
-    
-    public UserModel(String id, String name, String email){
-        this.id = id;
-        this.name = name;
-        this.email = email;
-    }
+   
 
     public String getName() {
         return name;
@@ -25,7 +32,7 @@ public class UserModel {
         return email;
     }
     
-    public String getId() {
+    public Long getId() {
         return id;
     }
     
@@ -37,7 +44,7 @@ public class UserModel {
         this.email = email;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 }
