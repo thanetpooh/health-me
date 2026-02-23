@@ -1,13 +1,16 @@
 package com.thanet.health_me.controllers;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
+
 
 
 // ใช้ประโยชน์จาก RestControllerAdvice,ExceptionHandler
@@ -32,5 +35,19 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = new HashMap<>();
         errors.put("message", ex.getReason());
         return ResponseEntity.status(ex.getStatusCode()).body(errors);
+    }
+
+    @ExceptionHandler(JpaSystemException.class)
+    public ResponseEntity<Map<String, String>> handleJpaSystemException(JpaSystemException ex){
+        Map<String, String> errors = new HashMap<>();
+        errors.put("message" , "Email already exists");
+        return ResponseEntity.badRequest().body(errors);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, String>> handleDataIntegrityViolationException(DataIntegrityViolationException ex){
+        Map<String, String> errors = new HashMap<>();
+        errors.put("message" , "Email already exists 2");
+        return ResponseEntity.badRequest().body(errors);
     }
 }

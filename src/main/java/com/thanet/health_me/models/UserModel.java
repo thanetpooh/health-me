@@ -1,5 +1,6 @@
 package com.thanet.health_me.models;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,8 +14,15 @@ public class UserModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false, unique = true)
     private String email;
+
+    private String password;
+    // เก็บเป้น plain text -> พอเซฟลง database ให้ encrypt ก่อน เวลาดึง ออกมาใช้ decrypt ก่อน
 
     public UserModel(){}
         
@@ -23,6 +31,11 @@ public class UserModel {
         this.email = email;
     }
    
+    public UserModel(String name, String email,String password){
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
 
     public String getName() {
         return name;
@@ -46,5 +59,13 @@ public class UserModel {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

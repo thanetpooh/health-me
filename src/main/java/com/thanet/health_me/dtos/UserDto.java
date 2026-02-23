@@ -4,11 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 
 public class UserDto {
     private String name;
-
-    @NotBlank(message = "Email is required")
     private String email;
 
-    
+    @NotBlank(message = "Email is required")
     public UserDto(String name, String email){
         this.name = name;
         this.email = email;
