@@ -22,7 +22,6 @@ public class UserModel {
     private String email;
 
     private String password;
-    // เก็บเป้น plain text -> พอเซฟลง database ให้ encrypt ก่อน เวลาดึง ออกมาใช้ decrypt ก่อน
 
     public UserModel(){}
         

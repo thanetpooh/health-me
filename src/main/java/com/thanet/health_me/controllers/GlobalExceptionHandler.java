@@ -13,7 +13,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 
 
-// ใช้ประโยชน์จาก RestControllerAdvice,ExceptionHandler
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

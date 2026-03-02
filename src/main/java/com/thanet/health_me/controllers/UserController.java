@@ -76,11 +76,12 @@ public class UserController {
         .filter(user -> user.getId().equals(id))
         .findFirst()
         .orElse(null);
-    if(userToDelete != null){
-        userRepository.delete(userToDelete);
-        return "User deleted successfully";
-    }
-    return "User not found";
+
+        if(userToDelete != null){
+            userRepository.delete(userToDelete);
+            return "User deleted successfully";
+        }
+        return "User not found";
     }
     
     
