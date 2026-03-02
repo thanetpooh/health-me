@@ -35,3 +35,4 @@ build/
 ### Config Application ####
 secret.env
 postgres_data/
+.env

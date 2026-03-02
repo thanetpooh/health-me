@@ -53,7 +53,7 @@ public class AuthController {
             if(!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invaild email or password (2)");
             }                        
-            try {
+            try {                
                 Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequestDto.getEmail(),
@@ -62,11 +62,12 @@ public class AuthController {
                 
         );
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            System.out.println("userDetail : " + userDetails);
             return jwtUtil.generateToken(userDetails.getUsername());    
             } catch (Exception e) {
                 System.out.println("error  :" + e);
             }
-            return "Login Successful";                               
+            return "Please try agian";
         }
     
 }

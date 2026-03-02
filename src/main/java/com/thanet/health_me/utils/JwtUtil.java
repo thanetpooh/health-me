@@ -14,15 +14,15 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
+
 @Component
 public class JwtUtil {
-
+    
     @Value("${jwt.secret}")
     private String secret;
 
     @Value("${jwt.expiration}")
     private long expiration;
-
     
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
