@@ -17,16 +17,17 @@ import com.thanet.health_me.dtos.UserDto;
 import com.thanet.health_me.models.UserModel;
 import com.thanet.health_me.repositories.UserRepository;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 
 @RestController
+@Tag(name = "User Management", description = "APIs for managing users")
 public class UserController {
     
     @Autowired
     private UserRepository userRepository;
-      
-
+          
     @GetMapping("/users")
     public List<UserDto> getUsers() {        
         return userRepository.findAll().stream()
