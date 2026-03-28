@@ -1,18 +1,36 @@
 import React from 'react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { Link } from 'react-router-dom';
 
-const MealCard = () => {
+type MealCardProps = {
+  menu: {
+    id: number;
+    name: string;
+    image: string;
+    category: string;
+    description: string;
+  };
+};
+
+const MealCard = ({ menu }: MealCardProps) => {
   return (
     <>
       <div className="card bg-base-100 shadow-sm">
         <figure>
-          <img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp" alt="Shoes" />
+          <Link to={`/menu/${menu.id}`}>
+            <LazyLoadImage src={menu.image} width={600} height={400} alt="Image Alt" />
+          </Link>
         </figure>
         <div className="card-body">
-          <h2 className="card-title">Hainanese Chicken Rice</h2>
-          <p>likes: 3</p>
+          <h2 className="card-title">{menu.name}</h2>
+          <p
+            className="card-title text-sm text-gray-400
+"
+          >
+            {menu.description}
+          </p>
           <div className="card-actions justify-end">
-            <div className="badge badge-outline">High Protien</div>
-            <div className="badge badge-outline">Breakfast</div>
+            <div className="badge badge-outline ">{menu.category}</div>
           </div>
         </div>
       </div>

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SelectedIngredients from './SelectedIngredients';
 import type { Ingredient } from '../../../types/ingredient';
 import CategoryFieldset from './CategoryFieldset';
 import MealCard from '../../meal/components/MealCard';
+import { thaiMenu } from '../../../utils/menu';
 
 const IngredientCategory = () => {
   const ingredientsInCategory: Ingredient[] = [
@@ -63,6 +64,8 @@ const IngredientCategory = () => {
     { key: 'other', label: 'อื่น ๆ' },
   ];
 
+  const [menu, setMenu] = useState(thaiMenu);
+
   const [userSelectedIngredients, setUserSelectedIngredients] = useState<number[]>([]);
   {
     const toggle = (id: number) => {
@@ -86,11 +89,11 @@ const IngredientCategory = () => {
               return <CategoryFieldset label={label} ingredients={filterIngredients} toggle={toggle} />;
             })}
           </div>
+
           <div className="grid grid-cols-2 gap-10 items-start content-start ">
-            <MealCard />
-            <MealCard />
-            <MealCard />
-            <MealCard />
+            {menu.map((item, index) => (
+              <MealCard key={index} menu={item} />
+            ))}
           </div>
         </section>
       </>

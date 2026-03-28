@@ -1,7 +1,6 @@
 import Pagination from '../components/Pagination';
 import IngredientCategory from '../features/ingredient/components/IngredientCategory';
 import SearchBar from '../features/ingredient/components/SearchBar';
-import MealCard from '../features/meal/components/MealCard';
 
 const Home = () => {
   return (
