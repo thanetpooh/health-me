@@ -38,6 +38,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(JpaSystemException.class)
     public ResponseEntity<Map<String, String>> handleJpaSystemException(JpaSystemException ex){
+        System.out.println("👉 " + ex);
         Map<String, String> errors = new HashMap<>();
         errors.put("message" , "Email already exists");
         return ResponseEntity.badRequest().body(errors);
@@ -47,6 +48,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleDataIntegrityViolationException(DataIntegrityViolationException ex){
         Map<String, String> errors = new HashMap<>();
         errors.put("message" , "Email already exists 2");
+        System.out.println("👉 " + ex);
         return ResponseEntity.badRequest().body(errors);
     }
 }
