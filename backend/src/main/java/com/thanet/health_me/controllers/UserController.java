@@ -38,7 +38,7 @@ public class UserController {
     @GetMapping("/users/{id}")
     public UserDto getUserById(@PathVariable String id) {        
         return userRepository.findAll().stream()
-        .filter(user -> user.getId().equals(id))
+        .filter(user -> user.getId().toString().equals(id))
         .map(user -> new UserDto(user.getName(),user.getEmail()))
         .findFirst()
         .orElse(null);
