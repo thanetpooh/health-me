@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import SelectedIngredients from './SelectedIngredients';
 import type { Ingredient } from '../../../types/ingredient';
 import CategoryFieldset from './CategoryFieldset';
@@ -64,7 +64,7 @@ const IngredientCategory = () => {
     { key: 'other', label: 'อื่น ๆ' },
   ];
 
-  const [menu, setMenu] = useState(thaiMenu);
+  const [menu] = useState(thaiMenu);
 
   const [userSelectedIngredients, setUserSelectedIngredients] = useState<number[]>([]);
   {

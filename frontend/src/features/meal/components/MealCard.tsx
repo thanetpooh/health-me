@@ -1,5 +1,3 @@
-import React from 'react';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { Link } from 'react-router-dom';
 
 type MealCardProps = {
@@ -18,7 +16,7 @@ const MealCard = ({ menu }: MealCardProps) => {
       <div className="card bg-base-100 shadow-sm">
         <figure>
           <Link to={`/menu/${menu.id}`}>
-            <LazyLoadImage src={menu.image} width={600} height={400} alt="Image Alt" />
+            <img src={menu.image} width={600} height={400} alt="Image Alt" />
           </Link>
         </figure>
         <div className="card-body">

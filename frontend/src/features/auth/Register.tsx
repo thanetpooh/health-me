@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 
@@ -22,10 +22,6 @@ const Register = () => {
   const onSubmit = (data: RegisterForm) => {
     console.log(data);
   };
-
-  useEffect(() => {
-    console.log(`👉`, isOpen);
-  }, [isOpen]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
