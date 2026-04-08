@@ -1,15 +1,21 @@
+import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 
 type RegisterForm = {
-  username: string;
+  name: string;
+  email: string;
   password: string;
   passwordConfirm: string;
   consent: boolean;
 };
 
 const Register = () => {
+  const [loading, setLoading] = useState<boolean>(false);
+  // const [error, setError] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
+
   const [isOpen, setIsOpen] = useState(false);
 
   const {
@@ -19,8 +25,31 @@ const Register = () => {
     formState: { errors },
   } = useForm<RegisterForm>();
 
-  const onSubmit = (data: RegisterForm) => {
-    console.log(data);
+  const onSubmit = async (data: RegisterForm) => {
+    setLoading(true);
+    setServerError(null);
+    try {
+      const response = await axios.post(
+        'http://localhost:8080/register',
+        {
+          name: data.name,
+          email: data.email,
+          password: data.password,
+        },
+        {
+          withCredentials: true,
+        },
+      );
+
+      console.log('💁 Success:', response.data);
+      alert('สมัครสมาชิกสำเร็จ!');
+    } catch (error: any) {
+      console.error('👉 Error:', error);
+      const msg = error.response?.data?.message || 'เกิดข้อผิดพลาดในการเชื่อมต่อ';
+      setServerError(msg);
+    } finally {
+      setLoading(false); // 3. แก้เป็น false เพื่อให้ปุ่มกลับมาใช้งานได้
+    }
   };
 
   return (
@@ -45,18 +74,31 @@ const Register = () => {
         className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4"
       >
         <legend className="fieldset-legend">สมัครสมาชิก</legend>
+        {serverError && <div className="alert alert-error mb-4 py-2 text-sm">{serverError}</div>}
 
-        <label className="label">ชื่อผู้ใช้</label>
+        <label className="label">ชื่อที่แสดง</label>
         <input
-          type="username"
+          type="name"
           className="input"
-          placeholder="ชื่อผู้ใช้"
-          {...register('username', {
+          placeholder="ชื่อที่แสดง"
+          {...register('name', {
+            required: 'กรุณากรอกชื่อ',
+            maxLength: 150,
+          })}
+        />
+        {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+
+        <label className="label">อีเมล</label>
+        <input
+          type="email"
+          className="input"
+          placeholder="อีเมล"
+          {...register('email', {
             required: 'กรุณากรอกอีเมล',
             maxLength: 150,
           })}
         />
-        {errors.username && <p className="text-red-500 text-sm">{errors.username.message}</p>}
+        {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
 
         <label className="label">รหัสผ่าน</label>
         <input
@@ -101,7 +143,7 @@ const Register = () => {
         </div>
         {errors.consent && <p className="text-red-500 text-sm">{errors.consent.message}</p>}
 
-        <button type="submit" className="btn btn-neutral mt-4">
+        <button type="submit" className="btn btn-neutral mt-4" disabled={loading}>
           สมัครสมาชิก
         </button>
       </form>

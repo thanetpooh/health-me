@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,8 +43,10 @@ public class MenuController{
         .orElse(null);        
     }
 
-    @PostMapping("/")
-    public Map createMenu(@RequestBody MenuDto menuDto) {            
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/")    
+    public Map createMenu(@RequestBody MenuDto menuDto) {     
+        System.out.println("create mnu routing !!");       
         menuRepository.save(new MenuModel(menuDto.getName(),menuDto.getDescription()));            
         List<MenuModel> menus = menuRepository.findAll();         
         HashMap<String, List<MenuModel>> response = new HashMap<>();    
@@ -51,7 +54,8 @@ public class MenuController{
         return response;
     }
 
-    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{id}")    
     public MenuDto updateMenu(@PathVariable Long id, @RequestBody MenuDto menuDto){
         MenuModel menuModel = menuRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Menu not found"));
         menuModel.setName(menuDto.getName());
@@ -60,7 +64,8 @@ public class MenuController{
         return new MenuDto(menuModel.getName(),menuModel.getDescription());
     }
 
-    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")    
     public String deleteMenu(@PathVariable Long id){
         try {
             menuRepository.deleteById(id);

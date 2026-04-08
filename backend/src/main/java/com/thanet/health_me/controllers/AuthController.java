@@ -48,6 +48,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public String login(@Valid @RequestBody LoginRequestDto loginRequestDto) {                 
+            System.out.println("login controller!!");
             UserModel user = userRepository.findByEmail(loginRequestDto.getEmail())        
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invaild email or password (1)"));            
             if(!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {

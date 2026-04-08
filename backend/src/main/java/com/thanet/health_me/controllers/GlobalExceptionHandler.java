@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = new HashMap<>();
         errors.put("message" , "Email already exists");
         return ResponseEntity.badRequest().body(errors);
-    }
+    }   
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, String>> handleDataIntegrityViolationException(DataIntegrityViolationException ex){
