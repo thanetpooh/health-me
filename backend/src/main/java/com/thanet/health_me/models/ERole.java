@@ -1,6 +1,6 @@
 package com.thanet.health_me.models;
 
-public enum Role {
+public enum ERole {
     USER,
     ADMIN
 }

@@ -23,7 +23,7 @@ public class RegisterRequestDto {
         return name;
     }
 
-    public String getEamil(){
+    public String getEmail(){
         return email;         
     }
  
