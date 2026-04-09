@@ -4,6 +4,10 @@ public class JwtResponseDto {
     private String accessToken;   
     private String refreshToken;
 
+    public JwtResponseDto(String accessToken) {
+        this.accessToken = accessToken;        
+    }    
+
     public JwtResponseDto(String accessToken, String refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;

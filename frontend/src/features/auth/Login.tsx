@@ -1,7 +1,13 @@
-import axios from 'axios';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
+import api from '../../lib/axiosInstance';
+
+type LoginResponse = {
+  token: string;
+};
 
 type LoginForm = {
   email: string;
@@ -9,6 +15,7 @@ type LoginForm = {
 };
 
 const Login = () => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -21,14 +28,25 @@ const Login = () => {
   const onSubmit = async (data: LoginForm) => {
     setIsLoading(true);
     try {
-      const response = await axios.post('http://localhost:8080/login', {
-        email: data.email,
-        password: data.password,
-      });
-      console.log('💁 Success:', response.data);
-      alert('เข้าสู่ระบบเรียบร้อย!');
+      const response = await api.post<LoginResponse>(
+        'auth/login',
+        {
+          email: data.email,
+          password: data.password,
+        },
+        {
+          withCredentials: true,
+        },
+      );
+      const accessToken = response.data.token;
+
+      if (accessToken) {
+        localStorage.setItem('token', accessToken);
+        console.log('💁 Success: Token stored!');
+        navigate('/');
+      }
     } catch (error) {
-      const msg = error.response?.data?.message || 'เกิดข้อผิดพลาดในการเชื่อมต่อ';
+      const msg = error.response?.data?.message || 'ผู้ใช้งานไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง';
       setServerError(msg);
     } finally {
       setIsLoading(false);

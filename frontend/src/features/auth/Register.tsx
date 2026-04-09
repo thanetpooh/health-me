@@ -1,7 +1,8 @@
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, redirect } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import api from '../../lib/axiosInstance';
 
 type RegisterForm = {
   name: string;
@@ -12,6 +13,7 @@ type RegisterForm = {
 };
 
 const Register = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
   // const [error, setError] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -29,8 +31,8 @@ const Register = () => {
     setLoading(true);
     setServerError(null);
     try {
-      const response = await axios.post(
-        'http://localhost:8080/register',
+      const response = await api.post(
+        'auth/register',
         {
           name: data.name,
           email: data.email,
@@ -43,12 +45,13 @@ const Register = () => {
 
       console.log('💁 Success:', response.data);
       alert('สมัครสมาชิกสำเร็จ!');
+      navigate('/login');
     } catch (error: any) {
       console.error('👉 Error:', error);
       const msg = error.response?.data?.message || 'เกิดข้อผิดพลาดในการเชื่อมต่อ';
       setServerError(msg);
     } finally {
-      setLoading(false); // 3. แก้เป็น false เพื่อให้ปุ่มกลับมาใช้งานได้
+      setLoading(false);
     }
   };
 

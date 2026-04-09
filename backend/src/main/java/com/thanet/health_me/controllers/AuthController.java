@@ -3,12 +3,15 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,7 +57,7 @@ public class AuthController {
     JwtUtil jwtUtils;
 
    @PostMapping("/login")
-    public JwtResponseDto authenticateUser(@RequestBody LoginRequestDto user) {
+    public ResponseEntity<JwtResponseDto> authenticateUser(@RequestBody LoginRequestDto user) {
 
     Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
@@ -75,7 +78,19 @@ public class AuthController {
 
     RefreshTokenModel refreshToken = refreshTokenService.createRefreshToken(userModel.getId());
 
-    return new JwtResponseDto(accessToken, refreshToken.getToken());
+    
+    ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken.getToken())
+            .httpOnly(true)
+            .secure(false) 
+            .path("/")
+            .maxAge(24 * 60 * 60) 
+            .sameSite("Lax")
+            .build();
+    
+    return ResponseEntity.ok()
+            .header(HttpHeaders.SET_COOKIE, cookie.toString())
+            .body(new JwtResponseDto(accessToken));
+
 }
     
 
@@ -100,20 +115,16 @@ public class AuthController {
     }
     
     @PostMapping("/refresh")
-public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> payload) {
-    String requestToken = payload.get("refreshToken");
-
+public ResponseEntity<?> refreshToken(@CookieValue(name = "refreshToken") String requestToken) {    
     return refreshTokenRepository.findByToken(requestToken)
             .map(token -> {
                 if (refreshTokenService.isTokenExpired(token)) {
                     refreshTokenRepository.delete(token);
-                    return ResponseEntity.badRequest()
-                            .body("Refresh token expired. Please login again.");
+                    return ResponseEntity.status(401).body("Refresh token expired.");
                 }
 
                 UserModel user = token.getUserModel();
                 UserDetailsImpl userDetails = new UserDetailsImpl(user);
-
                 String newJwt = jwtUtils.generateToken(userDetails);
 
                 return ResponseEntity.ok(Map.of("token", newJwt));
@@ -122,18 +133,20 @@ public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> payload) 
 }
     
     @PostMapping("/logout")
-    public ResponseEntity<?> logoutUser(@RequestBody Map<String, String> payload) {
-        String requestToken = payload.get("refreshToken");
+public ResponseEntity<?> logoutUser(@CookieValue(name = "refreshToken", required = false) String requestToken) {
+    if (requestToken != null) {
+        refreshTokenRepository.findByToken(requestToken)
+                .ifPresent(token -> refreshTokenRepository.delete(token));
+    }    
+    ResponseCookie cookie = ResponseCookie.from("refreshToken", null)
+            .httpOnly(true)
+            .secure(false)
+            .path("/")
+            .maxAge(0)
+            .build();
 
-        if (requestToken == null || requestToken.isBlank()) {
-            return ResponseEntity.badRequest().body("Refresh token is required.");
-        }
-
-        return refreshTokenRepository.findByToken(requestToken)
-                .map(token -> {
-                    refreshTokenRepository.delete(token);
-                    return ResponseEntity.ok("Logged out successfully.");
-                })
-                .orElse(ResponseEntity.badRequest().body("Invalid refresh token."));
-    }
+    return ResponseEntity.ok()
+            .header(HttpHeaders.SET_COOKIE, cookie.toString())
+            .body("Logged out successfully.");
+}
 }
