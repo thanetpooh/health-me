@@ -48,18 +48,22 @@ const Navbar = () => {
               </svg>
             </label>
             <div className="navbar-start">
-              <button className="btn btn-ghost text-xl">daisyUI</button>
+              <button className="btn btn-ghost text-xl">Healthme</button>
             </div>
           </div>
 
           <div className="navbar-end flex gap-4">
-            {token && (
+            {token ? (
               <>
                 <span className="text-sm font-medium">{userName}</span>
                 <a onClick={handleLogout} className="btn">
                   ออกจากระบบ
                 </a>
               </>
+            ) : (
+              <a href="/login" className="btn btn-primary">
+                เข้าสู่ระบบ
+              </a>
             )}
           </div>
         </div>
