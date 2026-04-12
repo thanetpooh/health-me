@@ -53,10 +53,14 @@ const Navbar = () => {
           </div>
 
           <div className="navbar-end flex gap-4">
-            {token && <span className="text-sm font-medium">{userName}</span>}
-            <a onClick={handleLogout} className="btn">
-              ออกจากระบบ
-            </a>
+            {token && (
+              <>
+                <span className="text-sm font-medium">{userName}</span>
+                <a onClick={handleLogout} className="btn">
+                  ออกจากระบบ
+                </a>
+              </>
+            )}
           </div>
         </div>
 

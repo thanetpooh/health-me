@@ -1,6 +1,6 @@
 package com.thanet.health_me.dtos;
 
-public class MenuDtoResponse {
+public class MenuSummaryDto {
     private Long id;
     private String name;
     private String description;
@@ -9,7 +9,7 @@ public class MenuDtoResponse {
     private Integer ingredientHave;
     private Integer ingredientNeed;
 
-    public MenuDtoResponse(Long id, String name, String description, Integer ingredientAll, Integer ingredientHave,
+    public MenuSummaryDto(Long id, String name, String description, Integer ingredientAll, Integer ingredientHave,
             Integer ingredientNeed) {
         this.id = id;
         this.name = name;

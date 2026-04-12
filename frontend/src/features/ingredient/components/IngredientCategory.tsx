@@ -68,8 +68,9 @@ const IngredientCategory: FC = () => {
             <div className="card-body p-5">
               <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h2 className="text-xl font-black uppercase tracking-tighter text-base-content">My Fridge</h2>
-                  <p className="text-[10px] opacity-50 font-bold uppercase tracking-widest">Select Ingredients</p>
+                  <h2 className="text-xl font-black uppercase tracking-tighter text-base-content">
+                    เลือกวัตถุดิบที่คุณมี
+                  </h2>
                 </div>
                 <div className="badge badge-primary font-bold">{selectedIds.length}</div>
               </div>
@@ -129,12 +130,10 @@ const IngredientCategory: FC = () => {
         <main className="lg:col-span-8 xl:col-span-9">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
             <div>
-              <h1 className="text-4xl font-black italic tracking-tighter text-base-content">COOKING TIME</h1>
+              <h1 className="text-4xl font-black italic tracking-tighter text-base-content">ถึงเวลาทำอาหารแล้ว !!</h1>
               <p className="text-sm opacity-60 font-medium">เมนูที่คุณสามารถรังสรรค์ได้จากวัตถุดิบในตู้เย็น</p>
             </div>
-            <div className="badge badge-outline badge-lg opacity-50 px-4 py-3 font-bold">
-              {menus?.length || 0} RECIPES FOUND
-            </div>
+            <div className="badge badge-outline badge-lg opacity-50 px-4 py-3 font-bold">{menus?.length || 0} เมนู</div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">

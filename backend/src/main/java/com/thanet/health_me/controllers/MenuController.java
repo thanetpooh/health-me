@@ -3,7 +3,6 @@ package com.thanet.health_me.controllers;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -18,15 +17,13 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference; 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thanet.health_me.dtos.InstructionDto;
-import com.thanet.health_me.dtos.MenuDetailResponseDto;
 import com.thanet.health_me.dtos.MenuDto;
-import com.thanet.health_me.dtos.MenuDtoResponse;
+import com.thanet.health_me.dtos.MenuFullDto;
 import com.thanet.health_me.dtos.MenuIngredientDto;
 import com.thanet.health_me.dtos.MenuIngredientItemDto;
+import com.thanet.health_me.dtos.MenuSummaryDto;
 import com.thanet.health_me.models.InstructionModel;
 import com.thanet.health_me.models.MenuDetailModel;
 import com.thanet.health_me.models.MenuIngredientModel;
@@ -45,16 +42,15 @@ public class MenuController{
     private MenuRepository menuRepository;
 
     @GetMapping
-        public ResponseEntity<List<MenuDtoResponse>> getMenus(
-        @RequestParam(value = "ids", required = false) List<Long> ids) {
+    public ResponseEntity<List<MenuSummaryDto>> getMenus(@RequestParam(value = "ids", required = false) List<Long> ids) {
         if (ids == null) {
             ids = List.of();
             }
         List<MenuIngredientDto> results =
                 menuRepository.findMenuWithFilters(ids, ids.size());
 
-        List<MenuDtoResponse> response = results.stream()
-            .map(m -> new MenuDtoResponse(
+        List<MenuSummaryDto> response = results.stream()
+            .map(m -> new MenuSummaryDto(
                 m.getId(),
                 m.getName(),
                 m.getDescription(),
@@ -66,26 +62,15 @@ public class MenuController{
     return ResponseEntity.ok(response);
 }
     @GetMapping("/{id}")
-    public ResponseEntity<?> getMenuDetailList(@PathVariable Long id) {
+public ResponseEntity<MenuFullDto> getMenuFullDetail(@PathVariable Long id) {
     return menuRepository.findMenuDetailById(id)
-                .map((MenuDetailResponseDto m ) -> {
-                    try {                 
-                        Map<String, Object> response = new HashMap<>();
-                        response.put("id", m.getId());
-                        response.put("name", m.getName());
-                        response.put("description", m.getDescription());                        
-                        response.put("ingredients", objectMapper.readValue(
-                            m.getIngredients(), new TypeReference<List<Map<String, Object>>>() {}));                        
-                        response.put("instructions", objectMapper.readValue(
-                            m.getInstructions(), new TypeReference<List<Map<String, Object>>>() {}));                
-                        return response; 
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException("JSON parsing failed", e);
-                    }
-                })
-                .map(ResponseEntity::ok) 
-                .orElse(ResponseEntity.notFound().build());
-    }
+            .map(m -> {                                
+                return MenuFullDto.from(m, objectMapper); 
+            })
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+}
+    
     @GetMapping("/image/{id}")
     public ResponseEntity<byte[]> getMenuImage(@PathVariable Long id) {    
         MenuModel menu = menuRepository.findById(id)
@@ -140,7 +125,6 @@ public class MenuController{
             newMenu.addInstruction(inst); 
         }
     }
-
 
     menuRepository.save(newMenu);    
 
