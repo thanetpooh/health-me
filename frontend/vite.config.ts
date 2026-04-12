@@ -11,6 +11,7 @@ export default defineConfig({
       '/api': 'http://localhost:8080',
     },
   },
+  base: process.env.VITE_BASE_PATH || '/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'), // @ หมายถึง src/
