@@ -1,104 +1,192 @@
-import { useState } from 'react';
-import SelectedIngredients from './SelectedIngredients';
-import type { Ingredient } from '../../../types/ingredient';
-import CategoryFieldset from './CategoryFieldset';
+import { useEffect, useState, useMemo, FC } from 'react';
 import MealCard from '../../meal/components/MealCard';
-import { thaiMenu } from '../../../utils/menu';
+import useMenus from '../../../hooks/useMenus';
+import api from '../../../lib/axiosInstance';
+import axios from 'axios';
 
-const IngredientCategory = () => {
-  const ingredientsInCategory: Ingredient[] = [
-    { id: 1, title: 'หมูสับ', category: 'meat' },
-    { id: 2, title: 'อกไก่', category: 'meat' },
-    { id: 3, title: 'เบคอน', category: 'meat' },
-    { id: 4, title: 'ไส้กรอก', category: 'meat' },
-    { id: 5, title: 'เนื้อวัว', category: 'meat' },
+type Ingredient = {
+  id: number;
+  name: string;
+  category: string;
+};
 
-    { id: 6, title: 'กุ้ง', category: 'seafood' },
-    { id: 7, title: 'ปลาทู', category: 'seafood' },
-    { id: 9, title: 'หอยแมลงภู่', category: 'seafood' },
+type GroupedIngredients = {
+  [categoryName: string]: Ingredient[];
+};
 
-    { id: 11, title: 'นมสด', category: 'dairy' },
-    { id: 12, title: 'เนย', category: 'dairy' },
-    { id: 13, title: 'ชีส', category: 'dairy' },
-    { id: 14, title: 'โยเกิร์ต', category: 'dairy' },
+const IngredientCategory: FC = () => {
+  const { menus, loading: menusLoading, error: menusError } = useMenus();
 
-    { id: 15, title: 'มะเขือเทศ', category: 'vegetable' },
-    { id: 16, title: 'ผักกาดหอม', category: 'vegetable' },
-    { id: 17, title: 'คะน้า', category: 'vegetable' },
-    { id: 18, title: 'แตงกวา', category: 'vegetable' },
-    { id: 19, title: 'แครอท', category: 'vegetable' },
-    { id: 20, title: 'หัวหอม', category: 'vegetable' },
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [catLoading, setCatLoading] = useState<boolean>(true);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
-    { id: 21, title: 'แอปเปิล', category: 'fruit' },
-    { id: 22, title: 'กล้วย', category: 'fruit' },
-    { id: 23, title: 'ส้ม', category: 'fruit' },
-    { id: 24, title: 'มะม่วง', category: 'fruit' },
-
-    { id: 25, title: 'ข้าวสวย', category: 'carb' },
-    { id: 26, title: 'ข้าวกล้อง', category: 'carb' },
-    { id: 27, title: 'มาม่า', category: 'carb' },
-    { id: 28, title: 'เส้นสปาเกตตี', category: 'carb' },
-    { id: 29, title: 'วุ้นเส้น', category: 'carb' },
-
-    { id: 30, title: 'ซอสถั่วเหลือง', category: 'condiment' },
-    { id: 31, title: 'ซอสมะเขือเทศ', category: 'condiment' },
-    { id: 32, title: 'กะทิ', category: 'condiment' },
-    { id: 33, title: 'น้ำปลา', category: 'condiment' },
-    { id: 34, title: 'น้ำมันมะกอก', category: 'condiment' },
-
-    { id: 35, title: 'พริกไทย', category: 'spice' },
-    { id: 36, title: 'เกลือ', category: 'spice' },
-    { id: 37, title: 'ผงปรุงรส', category: 'spice' },
-    { id: 38, title: 'พริกป่น', category: 'spice' },
-  ];
-
-  const categoryGroups: { key: Ingredient['category']; label: string }[] = [
-    { key: 'meat', label: 'เนื้อสัตว์' },
-    { key: 'seafood', label: 'ซีฟู๊ด' },
-    { key: 'dairy', label: 'ผลิตภัณฑ์นม' },
-    { key: 'vegetable', label: 'ผัก' },
-    { key: 'fruit', label: 'ผลไม้' },
-    { key: 'carb', label: 'คาร์บ' },
-    { key: 'condiment', label: 'เครื่องปรุงรส' },
-    { key: 'spice', label: 'เครื่องเทศ' },
-    { key: 'other', label: 'อื่น ๆ' },
-  ];
-
-  const [menu] = useState(thaiMenu);
-
-  const [userSelectedIngredients, setUserSelectedIngredients] = useState<number[]>([]);
-  {
-    const toggle = (id: number) => {
-      setUserSelectedIngredients((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await api.get<Ingredient[]>('ingredients');
+        setIngredients(res.data);
+      } catch (err) {
+        console.error('Failed to fetch ingredients:', err);
+      } finally {
+        setCatLoading(false);
+      }
     };
+    fetchData();
+  }, []);
 
+  const groupedIngredients = useMemo(() => {
+    return ingredients.reduce<GroupedIngredients>((acc, curr) => {
+      const groupName = curr.category || 'อื่นๆ';
+      if (acc[groupName] === undefined) {
+        console.log(`here`);
+        acc[groupName] = [];
+      }
+      acc[groupName].push(curr);
+      return acc;
+    }, {});
+  }, [ingredients]);
+
+  const handleSelect = async (id: number): Promise<void> => {
+    const nextIds = selectedIds.includes(id) ? selectedIds.filter((i) => i !== id) : [...selectedIds, id];
+    setSelectedIds(nextIds);
+
+    try {
+      const response = await axios.get('api/menus', {
+        params: {
+          ids: nextIds.join(','),
+        },
+      });
+
+      console.log('Filtered Menus:', response.data);
+    } catch (error) {
+      console.error('Error fetching filtered menus:', error);
+    }
+  };
+
+  if (menusLoading || catLoading) {
     return (
-      <>
-        <div className="flex flex-col gap-2 md:flex-row md:flex-wrap">
-          {userSelectedIngredients.map((id) => {
-            const found = ingredientsInCategory.find((item) => item.id === id);
-            return found ? <SelectedIngredients key={found.id} ingredient={found} /> : null;
-          })}
-        </div>
-
-        <section className="md:grid md:grid-cols-2">
-          <div>
-            {categoryGroups.map(({ key, label }) => {
-              const filterIngredients = ingredientsInCategory.filter((i) => i.category === key);
-              if (!filterIngredients.length) return null;
-              return <CategoryFieldset label={label} ingredients={filterIngredients} toggle={toggle} />;
-            })}
-          </div>
-
-          <div className="grid grid-cols-2 gap-10 items-start content-start ">
-            {menu.map((item, index) => (
-              <MealCard key={index} menu={item} />
-            ))}
-          </div>
-        </section>
-      </>
+      <div className="flex flex-col justify-center items-center p-20 gap-4">
+        <span className="loading loading-spinner loading-lg text-primary"></span>
+        <p className="text-sm font-bold opacity-50">กำลังเตรียมตู้เย็น...</p>
+      </div>
     );
   }
+
+  return (
+    <div className="p-4 md:p-8 bg-base-200 min-h-screen">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <aside className="lg:col-span-4 xl:col-span-3">
+          <div className="card bg-base-100 shadow-xl sticky top-6">
+            <div className="card-body p-5">
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <h2 className="text-xl font-black uppercase tracking-tighter text-base-content">My Fridge</h2>
+                  <p className="text-[10px] opacity-50 font-bold uppercase tracking-widest">Select Ingredients</p>
+                </div>
+                <div className="badge badge-primary font-bold">{selectedIds.length}</div>
+              </div>
+
+              <div className="space-y-8 max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
+                {Object.entries(groupedIngredients).map(([categoryName, items]) => (
+                  <div key={categoryName}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="w-1.5 h-4 bg-primary rounded-full"></span>
+                      <h3 className="text-xs font-black uppercase opacity-70 tracking-widest">{categoryName}</h3>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      {items.map((item) => (
+                        <label
+                          key={item.id}
+                          className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer border transition-all duration-200 ${
+                            selectedIds.includes(item.id)
+                              ? 'border-primary bg-primary/5 shadow-sm'
+                              : 'border-base-200 hover:border-base-300 hover:bg-base-50'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            className="checkbox checkbox-xs checkbox-primary rounded-sm border-2"
+                            checked={selectedIds.includes(item.id)}
+                            onChange={() => handleSelect(item.id)}
+                          />
+                          <span
+                            className={`text-[12px] truncate font-medium ${
+                              selectedIds.includes(item.id) ? 'text-primary font-bold' : 'text-base-content/70'
+                            }`}
+                          >
+                            {item.name}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {selectedIds.length > 0 && (
+                <div className="mt-6 pt-4 border-t border-base-200">
+                  <button
+                    className="btn btn-ghost btn-sm w-full text-error font-bold"
+                    onClick={() => setSelectedIds([])}
+                  >
+                    Clear Selection
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </aside>
+
+        <main className="lg:col-span-8 xl:col-span-9">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+            <div>
+              <h1 className="text-4xl font-black italic tracking-tighter text-base-content">COOKING TIME</h1>
+              <p className="text-sm opacity-60 font-medium">เมนูที่คุณสามารถรังสรรค์ได้จากวัตถุดิบในตู้เย็น</p>
+            </div>
+            <div className="badge badge-outline badge-lg opacity-50 px-4 py-3 font-bold">
+              {menus?.length || 0} RECIPES FOUND
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+            {menus?.map((item: any, index: number) => (
+              <div key={item.id || index} className="hover:translate-y-[-4px] transition-transform duration-300">
+                <MealCard menu={item} />
+              </div>
+            ))}
+          </div>
+
+          {(!menus || menus.length === 0) && !menusError && (
+            <div className="flex flex-col items-center justify-center py-24 bg-base-100 rounded-3xl border-2 border-dashed border-base-300">
+              <p className="text-lg font-black opacity-20 uppercase tracking-[0.2em]">No matching menus</p>
+              <p className="text-xs opacity-20 font-bold mt-2">TRY SELECTING MORE INGREDIENTS</p>
+            </div>
+          )}
+
+          {menusError && (
+            <div className="alert alert-error shadow-lg rounded-2xl">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="stroke-current shrink-0 h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span className="font-bold">เกิดข้อผิดพลาดในการโหลดเมนู กรุณาลองใหม่อีกครั้ง</span>
+            </div>
+          )}
+        </main>
+      </div>
+    </div>
+  );
 };
 
 export default IngredientCategory;

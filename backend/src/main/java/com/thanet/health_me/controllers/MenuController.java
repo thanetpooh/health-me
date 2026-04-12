@@ -1,21 +1,30 @@
 package com.thanet.health_me.controllers;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thanet.health_me.dtos.InstructionDto;
 import com.thanet.health_me.dtos.MenuDto;
+import com.thanet.health_me.dtos.MenuDtoResponse;
+import com.thanet.health_me.dtos.MenuIngredientItemDto;
+import com.thanet.health_me.models.InstructionModel;
+import com.thanet.health_me.models.MenuDetailModel;
+import com.thanet.health_me.models.MenuIngredientModel;
 import com.thanet.health_me.models.MenuModel;
 import com.thanet.health_me.repositories.MenuRepository;
 
@@ -24,47 +33,107 @@ import com.thanet.health_me.repositories.MenuRepository;
 @RestController
 @RequestMapping("/api/menus")
 public class MenuController{
- 
-
+     
     @Autowired
     private MenuRepository menuRepository;
 
-    @GetMapping("/")
-    public List<MenuDto> getMenus() {        
-        return menuRepository.findAll().stream()
-        .map(menu -> new MenuDto(menu.getName(),menu.getDescription()))
-        .toList();
+    @GetMapping
+public ResponseEntity<List<MenuDtoResponse>> getMenus(
+    @RequestParam(value = "ids", required = false) List<Long> ids
+) {
+
+    List<MenuDtoResponse> results;
+    if (ids == null || ids.isEmpty()) {        
+        results = menuRepository.findAll().stream()
+            .map(menu -> new MenuDtoResponse(
+                menu.getId(),
+                menu.getName(),
+                menu.getDescription(),
+                0,
+                0,
+                0
+            ))
+            .toList();
+    } else {        
+    results = menuRepository.findMenuIngredient(ids)
+    .stream()
+    .map(m -> new MenuDtoResponse(
+        null,
+        m.getName(),
+        m.getDescription(),
+        Integer.parseInt(m.getIngredient_all()),
+        Integer.parseInt(m.getIngredient_have()),
+        Integer.parseInt(m.getIngredient_need())
+    ))
+    .toList();
+    }
+    return ResponseEntity.ok(results);
+}
+
+    @GetMapping("/image/{id}")
+    public ResponseEntity<byte[]> getMenuImage(@PathVariable Long id) {    
+        MenuModel menu = menuRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ไม่พบเมนูรหัส: " + id));        
+        if (menu.getImageData() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(menu.getImageType()))
+                .body(menu.getImageData());
     }
 
-    @GetMapping("/{id}")
-    public MenuDto getMenuById(@PathVariable Long id) {                     
-        return menuRepository.findById(id)
-        .map((menu) -> new MenuDto(menu.getName(),menu.getDescription()))
-        .orElse(null);        
+    @PostMapping
+    public ResponseEntity<?> createMenu(@RequestPart("menu") String menuJson, @RequestPart("file") MultipartFile file) throws IOException {
+    ObjectMapper objectMapper = new ObjectMapper();
+    MenuDto menuDto = objectMapper.readValue(menuJson, MenuDto.class);    
+    
+    MenuModel newMenu = new MenuModel();
+    newMenu.setName(menuDto.getName());
+    newMenu.setDescription(menuDto.getDescription());    
+    newMenu.setImageData(file.getBytes());
+    newMenu.setImageType(file.getContentType());
+    newMenu.setImageName(file.getOriginalFilename());
+    
+    if (menuDto.getMenuDetail() != null) {
+        MenuDetailModel detail = new MenuDetailModel();
+        detail.setProtein(menuDto.getMenuDetail().getProtein());
+        detail.setFat(menuDto.getMenuDetail().getFat());
+        detail.setCarbohydrate(menuDto.getMenuDetail().getCarbohydrate());
+        detail.setCalories(menuDto.getMenuDetail().getCalories());
+        
+        newMenu.setMenuDetail(detail); 
+    }
+    
+    if (menuDto.getIngredients() != null) {
+        for (MenuIngredientItemDto ingDto : menuDto.getIngredients()) {
+            MenuIngredientModel ing = new MenuIngredientModel();
+            ing.setIngredientId(ingDto.getIngredientId());
+            ing.setQuantity(ingDto.getQuantity());
+            ing.setUnit(ingDto.getUnit());
+            
+            newMenu.addIngredient(ing);
+        }
+    }
+    
+    if (menuDto.getInstructions() != null) {
+        for (InstructionDto instDto : menuDto.getInstructions()) {
+            InstructionModel inst = new InstructionModel();
+            inst.setStepNumber(instDto.getStepNumber());
+            inst.setDescription(instDto.getDescription());
+            
+            newMenu.addInstruction(inst); 
+        }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/")    
-    public Map createMenu(@RequestBody MenuDto menuDto) {     
-        System.out.println("create mnu routing !!");       
-        menuRepository.save(new MenuModel(menuDto.getName(),menuDto.getDescription()));            
-        List<MenuModel> menus = menuRepository.findAll();         
-        HashMap<String, List<MenuModel>> response = new HashMap<>();    
-        response.put("menus", menus);        
-        return response;
-    }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}")    
-    public MenuDto updateMenu(@PathVariable Long id, @RequestBody MenuDto menuDto){
-        MenuModel menuModel = menuRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Menu not found"));
-        menuModel.setName(menuDto.getName());
-        menuModel.setDescription(menuDto.getDescription());
-        menuRepository.save(menuModel);
-        return new MenuDto(menuModel.getName(),menuModel.getDescription());
-    }
+    menuRepository.save(newMenu);    
 
-    @PreAuthorize("hasRole('ADMIN')")
+    List<MenuModel> menus = menuRepository.findAll();
+    HashMap<String, List<MenuModel>> response = new HashMap<>();
+    response.put("menus", menus);
+    return ResponseEntity.ok(response);
+}
+    
     @DeleteMapping("/{id}")    
     public String deleteMenu(@PathVariable Long id){
         try {

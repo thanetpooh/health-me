@@ -11,5 +11,5 @@ import com.thanet.health_me.models.UserModel;
 public interface UserRepository extends JpaRepository<UserModel, Long> {
     UserModel findByEmail(String email);
     boolean existsByEmail(String email);
-    // Optional<UserModel> findByEmail(String email);
+    
 } 

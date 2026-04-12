@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "role")
+@Table(name = "roles")
 public class RoleModel {
 
     @Id
@@ -30,4 +30,15 @@ public class RoleModel {
     public void setName(ERole name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("RoleModel{");
+        sb.append("id=").append(id);
+        sb.append(", name=").append(name);
+        sb.append('}');
+        return sb.toString();
+    }
+
 }

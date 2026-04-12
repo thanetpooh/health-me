@@ -15,7 +15,6 @@ type RegisterForm = {
 const Register = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
-  // const [error, setError] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
 
   const [isOpen, setIsOpen] = useState(false);

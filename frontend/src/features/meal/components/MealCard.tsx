@@ -1,36 +1,26 @@
 import { Link } from 'react-router-dom';
 
-type MealCardProps = {
-  menu: {
-    id: number;
-    name: string;
-    image: string;
-    category: string;
-    description: string;
-  };
+type MenuWithImage = {
+  id: number;
+  name: string;
+  imageUrl: string | null;
 };
 
-const MealCard = ({ menu }: MealCardProps) => {
+type Props = {
+  menu: MenuWithImage;
+};
+
+const MealCard = ({ menu }: Props) => {
   return (
     <>
       <div className="card bg-base-100 shadow-sm">
+        <p>{menu.name}</p>
+
         <figure>
           <Link to={`/menu/${menu.id}`}>
-            <img src={menu.image} width={600} height={400} alt="Image Alt" />
+            <img src={menu.imageUrl ?? undefined} width={600} height={400} alt="Image Alt" />
           </Link>
         </figure>
-        <div className="card-body">
-          <h2 className="card-title">{menu.name}</h2>
-          <p
-            className="card-title text-sm text-gray-400
-"
-          >
-            {menu.description}
-          </p>
-          <div className="card-actions justify-end">
-            <div className="badge badge-outline ">{menu.category}</div>
-          </div>
-        </div>
       </div>
     </>
   );

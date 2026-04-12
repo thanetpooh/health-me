@@ -58,42 +58,28 @@ public class AuthController {
 
    @PostMapping("/login")
     public ResponseEntity<JwtResponseDto> authenticateUser(@RequestBody LoginRequestDto user) {
-
     Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                     user.getEmail(),
                     user.getPassword()
             )
     );
-
-    System.out.println("👉 authen" + authentication);
-
     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-
     UserModel userModel = userRepository.findByEmail(userDetails.getUsername());
-
     SecurityContextHolder.getContext().setAuthentication(authentication);
-
     String accessToken = jwtUtils.generateToken(userDetails);
-
     RefreshTokenModel refreshToken = refreshTokenService.createRefreshToken(userModel.getId());
-
-    
     ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken.getToken())
             .httpOnly(true)
             .secure(false) 
             .path("/")
             .maxAge(24 * 60 * 60) 
             .sameSite("Lax")
-            .build();
-    
+            .build();    
     return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, cookie.toString())
             .body(new JwtResponseDto(accessToken));
-
 }
-    
-
     @PostMapping("/register")
     public String registerUser(@RequestBody RegisterRequestDto user) {
         if (userRepository.existsByEmail(user.getEmail())) {
@@ -105,48 +91,46 @@ public class AuthController {
                 user.getEmail(),
                 encoder.encode(user.getPassword())
         );
-        RoleModel role = roleRepository.findByName(ERole.USER)
+        RoleModel userRole = roleRepository.findByName(ERole.USER)
             .orElseThrow(() -> new RuntimeException("Role not found"));
 
-        newUser.setRoles(Set.of(role)); 
+        newUser.setRoles(Set.of(userRole)); 
         
         userRepository.save(newUser);
         return "User registered successfully!";
-    }
-    
+    }    
+
     @PostMapping("/refresh")
-public ResponseEntity<?> refreshToken(@CookieValue(name = "refreshToken") String requestToken) {    
-    return refreshTokenRepository.findByToken(requestToken)
+    public ResponseEntity<?> refreshToken(@CookieValue(name = "refreshToken") String requestToken) {    
+        return refreshTokenRepository.findByToken(requestToken)
             .map(token -> {
                 if (refreshTokenService.isTokenExpired(token)) {
                     refreshTokenRepository.delete(token);
                     return ResponseEntity.status(401).body("Refresh token expired.");
                 }
-
                 UserModel user = token.getUserModel();
                 UserDetailsImpl userDetails = new UserDetailsImpl(user);
                 String newJwt = jwtUtils.generateToken(userDetails);
-
                 return ResponseEntity.ok(Map.of("token", newJwt));
             })
             .orElse(ResponseEntity.badRequest().body("Invalid refresh token."));
-}
-    
-    @PostMapping("/logout")
-public ResponseEntity<?> logoutUser(@CookieValue(name = "refreshToken", required = false) String requestToken) {
-    if (requestToken != null) {
-        refreshTokenRepository.findByToken(requestToken)
-                .ifPresent(token -> refreshTokenRepository.delete(token));
-    }    
-    ResponseCookie cookie = ResponseCookie.from("refreshToken", null)
-            .httpOnly(true)
-            .secure(false)
-            .path("/")
-            .maxAge(0)
-            .build();
+}    
 
-    return ResponseEntity.ok()
-            .header(HttpHeaders.SET_COOKIE, cookie.toString())
-            .body("Logged out successfully.");
-}
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUser(@CookieValue(name = "refreshToken", required = false) String requestToken) {
+        if (requestToken != null) {
+            refreshTokenRepository.findByToken(requestToken)
+                    .ifPresent(token -> refreshTokenRepository.delete(token));
+        }    
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", null)
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body("Logged out successfully.");
+    }
 }

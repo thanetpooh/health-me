@@ -22,13 +22,11 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> authorities = new HashSet<>();
-
         for (RoleModel role : user.getRoles()) {
             authorities.add(
                 new SimpleGrantedAuthority("ROLE_" + role.getName().name())
             );
         }
-
         return authorities;
     }
 
@@ -43,7 +41,7 @@ public class UserDetailsImpl implements UserDetails {
     }
     
     public UserModel getUser() {
-    return user;
-}
-    
+        return user;
+    }
+   
 }

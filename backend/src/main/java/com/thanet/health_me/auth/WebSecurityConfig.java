@@ -3,6 +3,7 @@ package com.thanet.health_me.auth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -54,12 +55,17 @@ public class WebSecurityConfig {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests
-                                .requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/api/user/test/all").permitAll()
-                                .requestMatchers("/api/user/test/admin").hasRole("ADMIN")
-                                .requestMatchers("/api/user/test/user").hasAnyRole("USER", "ADMIN")
-                                .anyRequest().authenticated()
+                        authorizeRequests                        
+                .requestMatchers(HttpMethod.GET, "/api/menus/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/ingredients/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/menus/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/menus/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/menus/**").hasRole("ADMIN")
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/user/test/all").permitAll()                                
+                .requestMatchers("/api/user/test/admin").hasRole("ADMIN")
+                .requestMatchers("/api/user/test/user").hasAnyRole("USER", "ADMIN")
+                .anyRequest().authenticated()
                 );
     
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
