@@ -9,7 +9,7 @@ const MenuDetail = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const imageUrl = `${import.meta.env.VITE_API_BASE_URL}/api/menus/image/${id}`;
+  const imageUrl = `${import.meta.env.VITE_API_BASE_URL}/menus/image/${id}`;
 
   useEffect(() => {
     const fetchMenuById = async () => {

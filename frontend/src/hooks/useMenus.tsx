@@ -40,7 +40,7 @@ const useMenus = (ingredientIds: number[]) => {
 
         const menusWithImages: MenuWithImage[] = res.data.map((menu) => ({
           ...menu,
-          imageUrl: `${import.meta.env.VITE_API_BASE_URL}/api/menus/image/${menu.id}`,
+          imageUrl: `${import.meta.env.VITE_API_BASE_URL}/menus/image/${menu.id}`,
         }));
 
         setMenus(menusWithImages);
