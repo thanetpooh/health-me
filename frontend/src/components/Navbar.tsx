@@ -1,5 +1,3 @@
-import React from 'react';
-import axios from '../lib/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/axiosInstance';
 import { jwtDecode } from 'jwt-decode';

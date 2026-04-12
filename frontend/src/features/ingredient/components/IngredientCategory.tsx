@@ -1,8 +1,7 @@
-import { useEffect, useState, useMemo, FC } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import MealCard from '../../meal/components/MealCard';
 import useMenus from '../../../hooks/useMenus';
 import api from '../../../lib/axiosInstance';
-import axios from 'axios';
 
 type Ingredient = {
   id: number;
@@ -14,7 +13,7 @@ type GroupedIngredients = {
   [categoryName: string]: Ingredient[];
 };
 
-const IngredientCategory: FC = () => {
+const IngredientCategory = () => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [catLoading, setCatLoading] = useState<boolean>(true);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -39,7 +38,6 @@ const IngredientCategory: FC = () => {
     return ingredients.reduce<GroupedIngredients>((acc, curr) => {
       const groupName = curr.category || 'อื่นๆ';
       if (acc[groupName] === undefined) {
-        console.log(`here`);
         acc[groupName] = [];
       }
       acc[groupName].push(curr);
