@@ -15,14 +15,14 @@ type GroupedIngredients = {
 };
 
 const IngredientCategory: FC = () => {
-  const { menus, loading: menusLoading, error: menusError } = useMenus();
-
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [catLoading, setCatLoading] = useState<boolean>(true);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const { menus, loading: menusLoading, error: menusError } = useMenus(selectedIds);
 
   useEffect(() => {
     const fetchData = async () => {
+      setCatLoading(true);
       try {
         const res = await api.get<Ingredient[]>('ingredients');
         setIngredients(res.data);
@@ -50,25 +50,12 @@ const IngredientCategory: FC = () => {
   const handleSelect = async (id: number): Promise<void> => {
     const nextIds = selectedIds.includes(id) ? selectedIds.filter((i) => i !== id) : [...selectedIds, id];
     setSelectedIds(nextIds);
-
-    try {
-      const response = await axios.get('api/menus', {
-        params: {
-          ids: nextIds.join(','),
-        },
-      });
-
-      console.log('Filtered Menus:', response.data);
-    } catch (error) {
-      console.error('Error fetching filtered menus:', error);
-    }
   };
 
   if (menusLoading || catLoading) {
     return (
       <div className="flex flex-col justify-center items-center p-20 gap-4">
         <span className="loading loading-spinner loading-lg text-primary"></span>
-        <p className="text-sm font-bold opacity-50">กำลังเตรียมตู้เย็น...</p>
       </div>
     );
   }
@@ -152,7 +139,7 @@ const IngredientCategory: FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
             {menus?.map((item: any, index: number) => (
-              <div key={item.id || index} className="hover:translate-y-[-4px] transition-transform duration-300">
+              <div key={index} className="hover:translate-y-[-4px] transition-transform duration-300">
                 <MealCard menu={item} />
               </div>
             ))}

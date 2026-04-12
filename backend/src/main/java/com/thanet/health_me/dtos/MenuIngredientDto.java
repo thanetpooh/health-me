@@ -1,9 +1,11 @@
 package com.thanet.health_me.dtos;
 
 public interface MenuIngredientDto {
+    Long getId();
     String getName();
     String getDescription();
-    String getIngredient_all();
-    String getIngredient_have();
-    String getIngredient_need();
+   
+    Integer getIngredientAll();
+    Integer getIngredientHave();
+    Integer getIngredientNeed();
 }

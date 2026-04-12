@@ -24,17 +24,22 @@ export type MenuWithImage = Menu & {
   imageUrl: string | null;
 };
 
-const useMenus = () => {
+const useMenus = (ingredientIds: number[]) => {
   const [menus, setMenus] = useState<MenuWithImage[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const idsParam = ingredientIds.join(',');
 
   useEffect(() => {
     const urls: string[] = [];
     const fetchData = async () => {
       try {
         setLoading(true);
-        const res = await api.get<Menu[]>('/menus');
+        const res = await api.get<Menu[]>('/menus', {
+          params: {
+            ids: idsParam,
+          },
+        });
 
         const menusWithImages: MenuWithImage[] = await Promise.all(
           res.data.map(async (menu) => {
@@ -65,7 +70,7 @@ const useMenus = () => {
     return () => {
       urls.forEach((url) => URL.revokeObjectURL(url));
     };
-  }, []);
+  }, [idsParam]);
 
   return { menus, loading, error };
 };

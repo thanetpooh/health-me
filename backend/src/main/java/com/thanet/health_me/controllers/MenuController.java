@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thanet.health_me.dtos.InstructionDto;
 import com.thanet.health_me.dtos.MenuDto;
 import com.thanet.health_me.dtos.MenuDtoResponse;
+import com.thanet.health_me.dtos.MenuIngredientDto;
 import com.thanet.health_me.dtos.MenuIngredientItemDto;
 import com.thanet.health_me.models.InstructionModel;
 import com.thanet.health_me.models.MenuDetailModel;
@@ -39,35 +40,30 @@ public class MenuController{
 
     @GetMapping
 public ResponseEntity<List<MenuDtoResponse>> getMenus(
-    @RequestParam(value = "ids", required = false) List<Long> ids
-) {
+        @RequestParam(value = "ids", required = false) List<Long> ids) {
 
-    List<MenuDtoResponse> results;
-    if (ids == null || ids.isEmpty()) {        
-        results = menuRepository.findAll().stream()
-            .map(menu -> new MenuDtoResponse(
-                menu.getId(),
-                menu.getName(),
-                menu.getDescription(),
-                0,
-                0,
-                0
-            ))
-            .toList();
-    } else {        
-    results = menuRepository.findMenuIngredient(ids)
-    .stream()
-    .map(m -> new MenuDtoResponse(
-        null,
-        m.getName(),
-        m.getDescription(),
-        Integer.parseInt(m.getIngredient_all()),
-        Integer.parseInt(m.getIngredient_have()),
-        Integer.parseInt(m.getIngredient_need())
-    ))
-    .toList();
+    System.out.println("Received IDs: " + ids);
+
+
+    if (ids == null) {
+        ids = List.of();
     }
-    return ResponseEntity.ok(results);
+
+    List<MenuIngredientDto> results =
+            menuRepository.findMenuWithFilters(ids, ids.size());
+
+    List<MenuDtoResponse> response = results.stream()
+        .map(m -> new MenuDtoResponse(
+            m.getId(),
+            m.getName(),
+            m.getDescription(),
+            m.getIngredientAll(),
+            m.getIngredientHave(),
+            m.getIngredientNeed()
+        ))
+        .toList();
+
+    return ResponseEntity.ok(response);
 }
 
     @GetMapping("/image/{id}")

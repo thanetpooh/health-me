@@ -14,30 +14,40 @@ import com.thanet.health_me.models.MenuModel;
 public interface MenuRepository extends JpaRepository<MenuModel, Long> {
 
     @Query(value = """
+    SELECT 
+        m.id AS id,
+        m.name AS name,
+        m.description AS description,            
+        COALESCE(total.ingredient_all, 0) AS ingredientAll,
+        COALESCE(matched.ingredient_have, 0) AS ingredientHave,
+        (COALESCE(total.ingredient_all, 0) - COALESCE(matched.ingredient_have, 0)) AS ingredientNeed
+    FROM menus m
+    
+    LEFT JOIN (
         SELECT 
-            m.name AS name,
-            m.description as description,            
-            COALESCE(total.ingredient_all, 0) AS ingredient_all,
-            COALESCE(matched.ingredient_have, 0) AS ingredient_have,
-            (COALESCE(total.ingredient_all, 0) - COALESCE(matched.ingredient_have, 0)) AS ingredient_need
-        FROM menus m
-        LEFT JOIN (
-            SELECT 
-                menu_id, 
-                COUNT(*) AS ingredient_have
-            FROM menu_ingredients mi
-            WHERE mi.ingredient_id IN (:ingredientIds)
-            GROUP BY menu_id
-        ) AS matched ON m.id = matched.menu_id
-        LEFT JOIN (
-            SELECT 
-                menu_id, 
-                COUNT(*) AS ingredient_all
-            FROM menu_ingredients
-            GROUP BY menu_id
-        ) AS total ON m.id = total.menu_id
-        """, nativeQuery = true)
- 
-    List<MenuIngredientDto> findMenuIngredient(@Param("ingredientIds") List<Long> ingredientIds); 
+            menu_id, 
+            COUNT(*) AS ingredient_have
+        FROM menu_ingredients mi            
+        WHERE 
+            :ingredientIdsSize > 0 
+            AND mi.ingredient_id IN (:ingredientIds)
+        GROUP BY menu_id
+    ) AS matched ON m.id = matched.menu_id
+    
+    LEFT JOIN (
+        SELECT 
+            menu_id, 
+            COUNT(*) AS ingredient_all
+        FROM menu_ingredients
+        GROUP BY menu_id
+    ) AS total ON m.id = total.menu_id        
+    WHERE 
+        :ingredientIdsSize = 0 
+        OR matched.ingredient_have > 0
+    """, nativeQuery = true)
+List<MenuIngredientDto> findMenuWithFilters(
+    @Param("ingredientIds") List<Long> ingredientIds,
+    @Param("ingredientIdsSize") int ingredientIdsSize
+);
 
 } 

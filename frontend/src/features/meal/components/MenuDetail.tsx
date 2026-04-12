@@ -4,6 +4,7 @@ import useMenus from '../../../hooks/useMenus';
 
 const MenuDetail = () => {
   const { id } = useParams<{ id: string }>();
+  console.log(`id is`, id);
   const { menus, loading, error } = useMenus();
 
   const menuItem = menus.find((item) => item.id === Number(id));
