@@ -21,9 +21,8 @@ const IngredientCategory = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log('55');
       const imageUrl = `${import.meta.env.VITE_API_BASE_URL}/menus/image/16`;
-      console.log('66', imageUrl);
+
       setCatLoading(true);
       try {
         const res = await api.get<Ingredient[]>('ingredients');
