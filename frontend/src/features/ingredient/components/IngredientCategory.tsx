@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import MealCard from '../../meal/components/MealCard';
 import useMenus from '../../../hooks/useMenus';
 import api from '../../../lib/axiosInstance';
+import axios from 'axios';
 
 type Ingredient = {
   id: number;
@@ -19,11 +20,26 @@ const IngredientCategory = () => {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const { menus, loading: menusLoading, error: menusError } = useMenus(selectedIds);
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     setCatLoading(true);
+  //     try {
+  //       const res = await api.get<Ingredient[]>('ingredients');
+  //       setIngredients(res.data);
+  //     } catch (err) {
+  //       console.error('Failed to fetch ingredients:', err);
+  //     } finally {
+  //       setCatLoading(false);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
+
+   useEffect(() => {
     const fetchData = async () => {
       setCatLoading(true);
       try {
-        const res = await api.get<Ingredient[]>('ingredients');
+        const res = await axios.get("http://localhost:8080/api/ingredients")
         setIngredients(res.data);
       } catch (err) {
         console.error('Failed to fetch ingredients:', err);
@@ -33,6 +49,8 @@ const IngredientCategory = () => {
     };
     fetchData();
   }, []);
+
+
 
   const groupedIngredients = useMemo(() => {
     return ingredients.reduce<GroupedIngredients>((acc, curr) => {

@@ -3,8 +3,7 @@ import axios from 'axios';
 const base = import.meta.env.VITE_API_BASE_URL;
 
 const api = axios.create({
-  baseURL: base ? `${base}` : '/api',
-  withCredentials: true,
+  baseURL: 'http://127.0.0.1:8080/api',
 });
 
 api.interceptors.request.use((config) => {
