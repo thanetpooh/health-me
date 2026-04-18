@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.thanet.health_me.dtos.IngredientProjection;
+import com.thanet.health_me.dtos.IngredientResponseDto;
 import com.thanet.health_me.repositories.IngredientRepository;
 
 
@@ -20,7 +20,7 @@ public class IngredientController{
     private IngredientRepository ingredientRepository;
 
     @GetMapping
-    public List<IngredientProjection> getAllIngredients() {            
+    public List<IngredientResponseDto> getAllIngredients() {            
         return ingredientRepository.findAllProjected();
     }
 

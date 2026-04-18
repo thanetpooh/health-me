@@ -60,9 +60,8 @@ public class WebSecurityConfig {
                         authorizeRequests                        
                 .requestMatchers(HttpMethod.GET, "/api/menus/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/ingredients/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/menus/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/menus/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/menus/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/menus/**").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/api/menus/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/user/test/all").permitAll()                                
                 .requestMatchers("/api/user/test/admin").hasRole("ADMIN")

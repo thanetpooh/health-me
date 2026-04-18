@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.thanet.health_me.dtos.MenuDetailResponseDto;
-import com.thanet.health_me.dtos.MenuIngredientDto;
+import com.thanet.health_me.dtos.MenuOverviewDto;
+import com.thanet.health_me.dtos.MenuRawDetailDto;
 import com.thanet.health_me.models.MenuModel;
 
 @Repository
@@ -19,16 +19,17 @@ public interface MenuRepository extends JpaRepository<MenuModel, Long> {
     SELECT 
         m.id AS id,
         m.name AS name,
-        m.description AS description,            
-        COALESCE(total.ingredient_all, 0) AS ingredientAll,
-        COALESCE(matched.ingredient_have, 0) AS ingredientHave,
-        (COALESCE(total.ingredient_all, 0) - COALESCE(matched.ingredient_have, 0)) AS ingredientNeed
+        m.description AS description,        
+        m.url_image AS imageUrl,    
+        COALESCE(total.totalIngredients, 0) AS totalIngredients,
+        COALESCE(matched.availableIngredients, 0) AS availableIngredients,
+        (COALESCE(total.totalIngredients, 0) - COALESCE(matched.availableIngredients, 0)) AS missingIngredients
     FROM menus m
     
     LEFT JOIN (
         SELECT 
             menu_id, 
-            COUNT(*) AS ingredient_have
+            COUNT(*) AS availableIngredients
         FROM menu_ingredients mi            
         WHERE 
             :ingredientIdsSize > 0 
@@ -39,15 +40,15 @@ public interface MenuRepository extends JpaRepository<MenuModel, Long> {
     LEFT JOIN (
         SELECT 
             menu_id, 
-            COUNT(*) AS ingredient_all
+            COUNT(*) AS totalIngredients
         FROM menu_ingredients
         GROUP BY menu_id
     ) AS total ON m.id = total.menu_id        
     WHERE 
         :ingredientIdsSize = 0 
-        OR matched.ingredient_have > 0
+        OR matched.availableIngredients > 0
     """, nativeQuery = true)
-List<MenuIngredientDto> findMenuWithFilters(
+List<MenuOverviewDto> findMenuWithFilters(
     @Param("ingredientIds") List<Long> ingredientIds,
     @Param("ingredientIdsSize") int ingredientIdsSize    
 );
@@ -56,7 +57,8 @@ List<MenuIngredientDto> findMenuWithFilters(
         SELECT 
             m.id AS id, 
             m.name AS name,
-            m.description AS description,            
+            m.description AS description,       
+            m.url_image AS imageUrl,
             jsonb_agg(DISTINCT jsonb_build_object(
                 'id', i.id, 
                 'name', i.ingredient_name
@@ -75,6 +77,7 @@ List<MenuIngredientDto> findMenuWithFilters(
         WHERE m.id = :id
         GROUP BY m.id
         """, nativeQuery = true)
-    Optional<MenuDetailResponseDto> findMenuDetailById(@Param("id") Long id);
+    Optional<MenuRawDetailDto> findMenuDetailById(@Param("id") Long id);
+
 
 } 

@@ -29,15 +29,12 @@ public class MenuModel {
     @Column(name = "description")
     private String description;  
     
-    @Column(name = "image_type")
-    private String imageType;
+    @Column(name = "name_image")
+    private String nameImage;
 
-    @Column(name = "image_name")
-    private String imageName;
+    @Column(name = "url_image")
+    private String urlImage;
     
-    @Lob
-    @Column(name = "image_data")
-    private byte[] imageData;
     
     @OneToOne(mappedBy = "menu", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private MenuDetailModel menuDetail;
@@ -47,21 +44,6 @@ public class MenuModel {
     
     @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InstructionModel> instructions = new ArrayList<>();
-
-    public void addIngredient(MenuIngredientModel ingredient) {
-        ingredients.add(ingredient);
-        ingredient.setMenu(this);
-    }
-
-    public void addInstruction(InstructionModel instruction) {
-        instructions.add(instruction);
-        instruction.setMenu(this);
-    }
-
-    public void setMenuDetail(MenuDetailModel detail) {
-        this.menuDetail = detail;
-        detail.setMenu(this);
-    }
 
     public MenuDetailModel getMenuDetail() { return menuDetail; }
     public List<MenuIngredientModel> getIngredients() { return ingredients; }
@@ -96,32 +78,48 @@ public class MenuModel {
 
     public void setDescription(String description) {
         this.description = description;
+    }    
+
+    public void setIngredients(List<MenuIngredientModel> ingredients) {
+    this.ingredients = ingredients;
     }
 
-    public String getImageName() {
-        return imageName;
+    public void setInstructions(List<InstructionModel> instructions) {
+        this.instructions = instructions;
     }
 
-    public void setImageName(String imageName) {
-        this.imageName = imageName;
+    public String getNameImage() {
+        return nameImage;
     }
 
-    public byte[] getImageData() {
-        return imageData;
+    public void setNameImage(String nameImage) {
+        this.nameImage = nameImage;
     }
 
-    public void setImageData(byte[] imageData) {
-        this.imageData = imageData;
+    public String getUrlImage() {
+        return urlImage;
     }
 
-    public String getImageType() {
-        return imageType;
+    public void setUrlImage(String urlImage) {
+        this.urlImage = urlImage;
     }
 
-    public void setImageType(String imageType) {
-        this.imageType = imageType;
+    public void addIngredient(MenuIngredientModel ingredient) {
+    this.ingredients.add(ingredient);
+    ingredient.setMenu(this);
+}
+
+    public void addInstruction(InstructionModel instruction) {
+        this.instructions.add(instruction);
+        instruction.setMenu(this);
     }
 
-    
+    public void setMenuDetail(MenuDetailModel detail) {
+        this.menuDetail = detail;
+        if (detail != null) {
+            detail.setMenu(this);
+        }
+}
+
 
 }

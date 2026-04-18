@@ -1,9 +1,10 @@
 package com.thanet.health_me.dtos;
 
-public interface MenuDetailResponseDto {
+public interface MenuRawDetailDto {
     Long getId();
     String getName();
     String getDescription();        
     String getIngredients();
     String getInstructions();    
+    String getImageUrl();
 }

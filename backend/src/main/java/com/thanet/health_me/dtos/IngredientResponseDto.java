@@ -1,6 +1,6 @@
 package com.thanet.health_me.dtos;
 
-public interface IngredientProjection {
+public interface IngredientResponseDto {
     Long getId();
     String getName();
     String getCategory();

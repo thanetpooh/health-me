@@ -7,19 +7,22 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class MenuFullDto {
+public class MenuFullResponseDto {
     private Long id;
     private String name;
     private String description;
+    private String imageUrl;
 
     private List<Map<String, Object>> ingredients; 
     private List<Map<String, Object>> instructions;
 
-    public static MenuFullDto from(MenuDetailResponseDto m, ObjectMapper mapper) {
-        MenuFullDto dto = new MenuFullDto();
+    public static MenuFullResponseDto from(MenuRawDetailDto m, ObjectMapper mapper) {
+        MenuFullResponseDto dto = new MenuFullResponseDto();
         dto.setId(m.getId());
         dto.setName(m.getName());
         dto.setDescription(m.getDescription());
+        dto.setImageUrl(m.getImageUrl());
+        
 
         try {            
             if (m.getIngredients() != null) {
@@ -57,6 +60,14 @@ public class MenuFullDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public String getDescription() {

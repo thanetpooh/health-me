@@ -20,20 +20,7 @@ const IngredientCategory = () => {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const { menus, loading: menusLoading, error: menusError } = useMenus(selectedIds);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     setCatLoading(true);
-  //     try {
-  //       const res = await api.get<Ingredient[]>('ingredients');
-  //       setIngredients(res.data);
-  //     } catch (err) {
-  //       console.error('Failed to fetch ingredients:', err);
-  //     } finally {
-  //       setCatLoading(false);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
+
 
    useEffect(() => {
     const fetchData = async () => {

@@ -23,16 +23,16 @@ public class MenuDetailModel {
     private MenuModel menu;
 
     @Column(name = "protein")
-    private String protein;
+    private Double protein;
 
     @Column(name = "fat")
-    private String fat;
+    private Double fat;
 
     @Column(name = "carbohydrate")
-    private String carbohydrate;
+    private Double carbohydrate;
 
     @Column(name = "calories")
-    private Integer calories;
+    private Double calories;
 
     public MenuDetailModel() {}
 
@@ -43,15 +43,37 @@ public class MenuDetailModel {
     public MenuModel getMenu() { return menu; }
     public void setMenu(MenuModel menu) { this.menu = menu; }
 
-    public String getProtein() { return protein; }
-    public void setProtein(String protein) { this.protein = protein; }
+    public Double getProtein() {
+        return protein;
+    }
 
-    public String getFat() { return fat; }
-    public void setFat(String fat) { this.fat = fat; }
+    public void setProtein(Double protein) {
+        this.protein = protein;
+    }
 
-    public String getCarbohydrate() { return carbohydrate; }
-    public void setCarbohydrate(String carbohydrate) { this.carbohydrate = carbohydrate; }
+    public Double getFat() {
+        return fat;
+    }
 
-    public Integer getCalories() { return calories; }
-    public void setCalories(Integer calories) { this.calories = calories; }   
+    public void setFat(Double fat) {
+        this.fat = fat;
+    }
+
+    public Double getCarbohydrate() {
+        return carbohydrate;
+    }
+
+    public void setCarbohydrate(Double carbohydrate) {
+        this.carbohydrate = carbohydrate;
+    }
+
+    public Double getCalories() {
+        return calories;
+    }
+
+    public void setCalories(Double calories) {
+        this.calories = calories;
+    }
+
+   
 }
