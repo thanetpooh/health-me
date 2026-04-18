@@ -1,6 +1,5 @@
 package com.thanet.health_me.controllers;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -21,9 +20,7 @@ import com.thanet.health_me.auth.UserDetailsImpl;
 import com.thanet.health_me.dtos.JwtResponseDto;
 import com.thanet.health_me.dtos.LoginRequestDto;
 import com.thanet.health_me.dtos.RegisterRequestDto;
-import com.thanet.health_me.models.ERole;
 import com.thanet.health_me.models.RefreshTokenModel;
-import com.thanet.health_me.models.RoleModel;
 import com.thanet.health_me.models.UserModel;
 import com.thanet.health_me.repositories.RefreshTokenRepository;
 import com.thanet.health_me.repositories.RoleRepository;
@@ -91,11 +88,6 @@ public class AuthController {
                 user.getEmail(),
                 encoder.encode(user.getPassword())
         );
-        RoleModel userRole = roleRepository.findByName(ERole.USER)
-            .orElseThrow(() -> new RuntimeException("Role not found"));
-
-        newUser.setRoles(Set.of(userRole)); 
-        
         userRepository.save(newUser);
         return "User registered successfully!";
     }    
@@ -117,20 +109,21 @@ public class AuthController {
 }    
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logoutUser(@CookieValue(name = "refreshToken", required = false) String requestToken) {
-        if (requestToken != null) {
-            refreshTokenRepository.findByToken(requestToken)
-                    .ifPresent(token -> refreshTokenRepository.delete(token));
-        }    
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", null)
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .maxAge(0)
-                .build();
+public ResponseEntity<?> logoutUser(@CookieValue(name = "refreshToken", required = false) String requestToken) {
+    if (requestToken != null) {
+        refreshTokenRepository.findByToken(requestToken)
+                .ifPresent(token -> refreshTokenRepository.delete(token));
+    }    
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body("Logged out successfully.");
-    }
+    ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
+            .httpOnly(true)
+            .secure(false) 
+            .path("/")
+            .maxAge(0) 
+            .build();
+
+    return ResponseEntity.ok()
+            .header(HttpHeaders.SET_COOKIE, cookie.toString())
+            .body("Logged out successfully.");
+}
 }

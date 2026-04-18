@@ -29,6 +29,9 @@ public class UserModel {
 
     private String password;
 
+    @Column(name = "role",columnDefinition = "VARCHAR(20) DEFAULT 'USER'")
+    private String role;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -80,10 +83,19 @@ public class UserModel {
         this.password = password;
     }
     public Set<RoleModel> getRoles() {
-    return roles;
+        return roles;
     }
     public void setRoles(Set<RoleModel> roles) {
         this.roles = roles;
     }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+    
 
 }

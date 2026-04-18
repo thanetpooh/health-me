@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.thanet.health_me.models.RefreshTokenModel;
+import com.thanet.health_me.models.UserModel;
 import com.thanet.health_me.repositories.RefreshTokenRepository;
 import com.thanet.health_me.repositories.UserRepository;
+
+import jakarta.transaction.Transactional;
 
 
 
@@ -24,11 +27,19 @@ public class RefreshTokenService {
         this.userRepository = userRepo;
     }
 
+    @Transactional 
     public RefreshTokenModel createRefreshToken(Long userId) {
-        var token = new RefreshTokenModel();
-        token.setUserModel(userRepository.findById(userId).get());
+        UserModel user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        refreshTokenRepository.deleteByUserModel(user);
+        refreshTokenRepository.flush(); 
+        
+        RefreshTokenModel token = new RefreshTokenModel();
+        token.setUserModel(user);
         token.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
         token.setToken(UUID.randomUUID().toString());
+
         return refreshTokenRepository.save(token);
     }
 
