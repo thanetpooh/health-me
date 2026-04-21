@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import api from '../lib/axiosInstance';
 
 export type Ingredient = {
@@ -16,34 +16,45 @@ export type Menu = {
   id: number;
   name: string;
   description: string;
+  imageUrl: string;
   baseIngredients: Ingredient[];
   steps: Step[];
 };
 
-export type MenuWithImage = Menu & {
-  imageUrl: string | null;
+export type MenuSummary = {
+  id: number;
+  name: string;
+  description: string;
+  imageUrl: string;
+  availableIngredients: number;
+  totalIngredients: number;
+  missingIngredients: number;
+};
+
+export type MenuDetail = MenuSummary & {
+  baseIngredients: Ingredient[];
+  steps: Step[];
 };
 
 const useMenus = (ingredientIds: number[]) => {
-  const [menus, setMenus] = useState<MenuWithImage[]>([]);
+  const [menus, setMenus] = useState<MenuSummary[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const idsParam = ingredientIds.join(',');
+  const idsParam = useMemo(() => ingredientIds.join(','), [ingredientIds]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const res = await api.get<Menu[]>('/menus', {
+        const res = await api.get<MenuSummary[]>('/menus', {
           params: { ids: idsParam },
         });
-
-        const menusWithImages: MenuWithImage[] = res.data.map((menu) => ({
-          ...menu,
-          imageUrl: `${import.meta.env.VITE_API_BASE_URL}/menus/image/${menu.id}`,
-        }));
-
-        setMenus(menusWithImages);
+        console.log('The data is', res.data);
+        setMenus(res.data);
+        setMenus((prev) => {
+          console.log('menus is', prev);
+          return prev;
+        });
       } catch (err) {
         setError('ไม่สามารถโหลดข้อมูลเมนูได้');
       } finally {

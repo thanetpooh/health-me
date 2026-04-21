@@ -13,7 +13,7 @@ public class MenuFullResponseDto {
     private String description;
     private String imageUrl;
 
-    private List<Map<String, Object>> ingredients; 
+    private List<Map<String, Object>> ingredients;
     private List<Map<String, Object>> instructions;
 
     public static MenuFullResponseDto from(MenuRawDetailDto m, ObjectMapper mapper) {
@@ -22,27 +22,29 @@ public class MenuFullResponseDto {
         dto.setName(m.getName());
         dto.setDescription(m.getDescription());
         dto.setImageUrl(m.getImageUrl());
-        
 
-        try {            
+        try {
             if (m.getIngredients() != null) {
-                dto.setIngredients(mapper.readValue(m.getIngredients(), new TypeReference<List<Map<String, Object>>>() {}));
+                dto.setIngredients(mapper.readValue(m.getIngredients(), new TypeReference<List<Map<String, Object>>>() {
+                }));
             } else {
                 dto.setIngredients(List.of());
             }
 
             if (m.getInstructions() != null) {
-                dto.setInstructions(mapper.readValue(m.getInstructions(), new TypeReference<List<Map<String, Object>>>() {}));
+                dto.setInstructions(
+                        mapper.readValue(m.getInstructions(), new TypeReference<List<Map<String, Object>>>() {
+                        }));
             } else {
                 dto.setInstructions(List.of());
             }
 
-        } catch (JsonProcessingException e) {            
+        } catch (JsonProcessingException e) {
             System.err.println("❌ Error for menu ID " + m.getId() + ": " + e.getMessage());
             dto.setIngredients(List.of());
             dto.setInstructions(List.of());
         }
-        
+
         return dto;
     }
 
@@ -94,5 +96,4 @@ public class MenuFullResponseDto {
         this.instructions = instructions;
     }
 
-    
 }

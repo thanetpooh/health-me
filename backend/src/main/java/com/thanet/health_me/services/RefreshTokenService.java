@@ -1,4 +1,5 @@
 package com.thanet.health_me.services;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -11,8 +12,6 @@ import com.thanet.health_me.repositories.RefreshTokenRepository;
 import com.thanet.health_me.repositories.UserRepository;
 
 import jakarta.transaction.Transactional;
-
-
 
 @Service
 public class RefreshTokenService {
@@ -27,14 +26,14 @@ public class RefreshTokenService {
         this.userRepository = userRepo;
     }
 
-    @Transactional 
+    @Transactional
     public RefreshTokenModel createRefreshToken(Long userId) {
         UserModel user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         refreshTokenRepository.deleteByUserModel(user);
-        refreshTokenRepository.flush(); 
-        
+        refreshTokenRepository.flush();
+
         RefreshTokenModel token = new RefreshTokenModel();
         token.setUserModel(user);
         token.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));

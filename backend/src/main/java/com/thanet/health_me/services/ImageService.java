@@ -1,12 +1,10 @@
 package com.thanet.health_me.services;
 
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 
-import java.util.Map;
-
 import com.thanet.health_me.dtos.MenuCreateRequestDto;
-import com.thanet.health_me.models.MenuModel;
 
 public interface ImageService {
 

@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+
 @Entity
 @Table(name = "users")
 public class UserModel {
@@ -29,26 +30,25 @@ public class UserModel {
 
     private String password;
 
-    @Column(name = "role",columnDefinition = "VARCHAR(20) DEFAULT 'USER'")
+    @Column(name = "role", columnDefinition = "VARCHAR(20) DEFAULT 'USER'")
     private String role;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<RoleModel> roles = new HashSet<>();
 
-    public UserModel(){}
-        
-    public UserModel(String name, String email){
-        this.name = name;
-        this.email = email;        
+    public UserModel() {
     }
-   
-    public UserModel(String name, String email,String password){
+
+    public UserModel(String name, String email) {
         this.name = name;
         this.email = email;
-        this.password = password;        
+    }
+
+    public UserModel(String name, String email, String password) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
     }
 
     public String getName() {
@@ -58,11 +58,11 @@ public class UserModel {
     public String getEmail() {
         return email;
     }
-    
+
     public Long getId() {
         return id;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -82,9 +82,11 @@ public class UserModel {
     public void setPassword(String password) {
         this.password = password;
     }
+
     public Set<RoleModel> getRoles() {
         return roles;
     }
+
     public void setRoles(Set<RoleModel> roles) {
         this.roles = roles;
     }
@@ -96,6 +98,5 @@ public class UserModel {
     public void setRole(String role) {
         this.role = role;
     }
-    
 
 }

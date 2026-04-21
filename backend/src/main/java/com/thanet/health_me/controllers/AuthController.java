@@ -1,4 +1,5 @@
 package com.thanet.health_me.controllers;
+
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,77 +54,75 @@ public class AuthController {
     @Autowired
     JwtUtil jwtUtils;
 
-   @PostMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<JwtResponseDto> authenticateUser(@RequestBody LoginRequestDto user) {
-    Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                    user.getEmail(),
-                    user.getPassword()
-            )
-    );
-    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-    UserModel userModel = userRepository.findByEmail(userDetails.getUsername());
-    SecurityContextHolder.getContext().setAuthentication(authentication);
-    String accessToken = jwtUtils.generateToken(userDetails);
-    RefreshTokenModel refreshToken = refreshTokenService.createRefreshToken(userModel.getId());
-    ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken.getToken())
-            .httpOnly(true)
-            .secure(false) 
-            .path("/")
-            .maxAge(24 * 60 * 60) 
-            .sameSite("Lax")
-            .build();    
-    return ResponseEntity.ok()
-            .header(HttpHeaders.SET_COOKIE, cookie.toString())
-            .body(new JwtResponseDto(accessToken));
-}
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        user.getEmail(),
+                        user.getPassword()));
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        UserModel userModel = userRepository.findByEmail(userDetails.getUsername());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String accessToken = jwtUtils.generateToken(userDetails);
+        RefreshTokenModel refreshToken = refreshTokenService.createRefreshToken(userModel.getId());
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken.getToken())
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(24 * 60 * 60)
+                .sameSite("Lax")
+                .build();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(new JwtResponseDto(accessToken));
+    }
+
     @PostMapping("/register")
     public String registerUser(@RequestBody RegisterRequestDto user) {
         if (userRepository.existsByEmail(user.getEmail())) {
             return "Error: Username/Email is already taken!";
-        }        
+        }
         UserModel newUser;
         newUser = new UserModel(
                 user.getName(),
                 user.getEmail(),
-                encoder.encode(user.getPassword())
-        );
+                encoder.encode(user.getPassword()));
         userRepository.save(newUser);
         return "User registered successfully!";
-    }    
+    }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshToken(@CookieValue(name = "refreshToken") String requestToken) {    
+    public ResponseEntity<?> refreshToken(@CookieValue(name = "refreshToken") String requestToken) {
         return refreshTokenRepository.findByToken(requestToken)
-            .map(token -> {
-                if (refreshTokenService.isTokenExpired(token)) {
-                    refreshTokenRepository.delete(token);
-                    return ResponseEntity.status(401).body("Refresh token expired.");
-                }
-                UserModel user = token.getUserModel();
-                UserDetailsImpl userDetails = new UserDetailsImpl(user);
-                String newJwt = jwtUtils.generateToken(userDetails);
-                return ResponseEntity.ok(Map.of("token", newJwt));
-            })
-            .orElse(ResponseEntity.badRequest().body("Invalid refresh token."));
-}    
+                .map(token -> {
+                    if (refreshTokenService.isTokenExpired(token)) {
+                        refreshTokenRepository.delete(token);
+                        return ResponseEntity.status(401).body("Refresh token expired.");
+                    }
+                    UserModel user = token.getUserModel();
+                    UserDetailsImpl userDetails = new UserDetailsImpl(user);
+                    String newJwt = jwtUtils.generateToken(userDetails);
+                    return ResponseEntity.ok(Map.of("token", newJwt));
+                })
+                .orElse(ResponseEntity.badRequest().body("Invalid refresh token."));
+    }
 
     @PostMapping("/logout")
-public ResponseEntity<?> logoutUser(@CookieValue(name = "refreshToken", required = false) String requestToken) {
-    if (requestToken != null) {
-        refreshTokenRepository.findByToken(requestToken)
-                .ifPresent(token -> refreshTokenRepository.delete(token));
-    }    
+    public ResponseEntity<?> logoutUser(@CookieValue(name = "refreshToken", required = false) String requestToken) {
+        if (requestToken != null) {
+            refreshTokenRepository.findByToken(requestToken)
+                    .ifPresent(token -> refreshTokenRepository.delete(token));
+        }
 
-    ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
-            .httpOnly(true)
-            .secure(false) 
-            .path("/")
-            .maxAge(0) 
-            .build();
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(0)
+                .build();
 
-    return ResponseEntity.ok()
-            .header(HttpHeaders.SET_COOKIE, cookie.toString())
-            .body("Logged out successfully.");
-}
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body("Logged out successfully.");
+    }
 }

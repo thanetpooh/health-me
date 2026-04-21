@@ -2,15 +2,8 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import type {RegisterForm} from "../../types/register"
 import api from '../../lib/axiosInstance';
-
-type RegisterForm = {
-  name: string;
-  email: string;
-  password: string;
-  passwordConfirm: string;
-  consent: boolean;
-};
 
 const Register = () => {
   const navigate = useNavigate();

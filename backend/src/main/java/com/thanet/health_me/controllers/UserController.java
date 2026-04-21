@@ -17,57 +17,53 @@ import com.thanet.health_me.repositories.UserRepository;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-
 @RestController
 @Tag(name = "User Management", description = "APIs for managing users")
 public class UserController {
-    
+
     @Autowired
     private UserRepository userRepository;
-          
+
     @GetMapping("/users")
-    public List<UserDto> getUsers() {        
+    public List<UserDto> getUsers() {
         return userRepository.findAll().stream()
-        .map(user -> new UserDto(user.getName(),user.getEmail()))
-        .toList();        
+                .map(user -> new UserDto(user.getName(), user.getEmail()))
+                .toList();
     }
 
     @GetMapping("/users/{id}")
-    public UserDto getUserById(@PathVariable String id) {        
+    public UserDto getUserById(@PathVariable String id) {
         return userRepository.findAll().stream()
-        .filter(user -> user.getId().toString().equals(id))
-        .map(user -> new UserDto(user.getName(),user.getEmail()))
-        .findFirst()
-        .orElse(null);
+                .filter(user -> user.getId().toString().equals(id))
+                .map(user -> new UserDto(user.getName(), user.getEmail()))
+                .findFirst()
+                .orElse(null);
     }
 
     @PostMapping("/users")
     public String createUser(@RequestBody UserDto userDto) {
-        userRepository.save(new UserModel(userDto.getName(), userDto.getEmail()));        
+        userRepository.save(new UserModel(userDto.getName(), userDto.getEmail()));
         return "create user successful";
     }
-    
+
     @PutMapping("users/{id}")
     public String updateUser(@PathVariable String id, @RequestBody UserDto userDto) {
         UserModel updatedUser = new UserModel(userDto.getName(), userDto.getEmail());
-        userRepository.save(updatedUser);        
+        userRepository.save(updatedUser);
         return "User updated successfully";
     }
 
     @DeleteMapping("/users/{id}")
-    public String deleteUser(@PathVariable String id){
+    public String deleteUser(@PathVariable String id) {
         UserModel userToDelete = userRepository.findAll().stream()
-        .filter(user -> user.getId().equals(id))
-        .findFirst()
-        .orElse(null);
+                .filter(user -> user.getId().equals(id))
+                .findFirst()
+                .orElse(null);
 
-        if(userToDelete != null){
+        if (userToDelete != null) {
             userRepository.delete(userToDelete);
             return "User deleted successfully";
         }
         return "User not found";
     }
-    
-    
-
 }

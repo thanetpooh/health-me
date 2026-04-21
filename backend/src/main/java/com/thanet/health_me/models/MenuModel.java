@@ -10,7 +10,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -18,7 +17,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "menus")
 public class MenuModel {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,31 +26,39 @@ public class MenuModel {
     private String name;
 
     @Column(name = "description")
-    private String description;  
-    
+    private String description;
+
     @Column(name = "name_image")
     private String nameImage;
 
     @Column(name = "url_image")
     private String urlImage;
-    
-    
-    @OneToOne(mappedBy = "menu", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+
+    @OneToOne(mappedBy = "menu", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private MenuDetailModel menuDetail;
-    
+
     @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MenuIngredientModel> ingredients = new ArrayList<>();
-    
+
     @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InstructionModel> instructions = new ArrayList<>();
 
-    public MenuDetailModel getMenuDetail() { return menuDetail; }
-    public List<MenuIngredientModel> getIngredients() { return ingredients; }
-    public List<InstructionModel> getInstructions() { return instructions; }
-        
-    public MenuModel() {}
+    public MenuDetailModel getMenuDetail() {
+        return menuDetail;
+    }
 
-    public MenuModel(String name, String description) {        
+    public List<MenuIngredientModel> getIngredients() {
+        return ingredients;
+    }
+
+    public List<InstructionModel> getInstructions() {
+        return instructions;
+    }
+
+    public MenuModel() {
+    }
+
+    public MenuModel(String name, String description) {
         this.name = name;
         this.description = description;
     }
@@ -78,10 +85,10 @@ public class MenuModel {
 
     public void setDescription(String description) {
         this.description = description;
-    }    
+    }
 
     public void setIngredients(List<MenuIngredientModel> ingredients) {
-    this.ingredients = ingredients;
+        this.ingredients = ingredients;
     }
 
     public void setInstructions(List<InstructionModel> instructions) {
@@ -105,9 +112,9 @@ public class MenuModel {
     }
 
     public void addIngredient(MenuIngredientModel ingredient) {
-    this.ingredients.add(ingredient);
-    ingredient.setMenu(this);
-}
+        this.ingredients.add(ingredient);
+        ingredient.setMenu(this);
+    }
 
     public void addInstruction(InstructionModel instruction) {
         this.instructions.add(instruction);
@@ -119,7 +126,6 @@ public class MenuModel {
         if (detail != null) {
             detail.setMenu(this);
         }
-}
-
+    }
 
 }

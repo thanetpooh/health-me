@@ -1,4 +1,5 @@
 package com.thanet.health_me.utils;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+
 @Component
 public class JwtUtil {
     @Value("${jwt.secret}")
@@ -27,30 +29,30 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private int jwtExpirationMs;
     private SecretKey key;
-    
+
     @PostConstruct
     public void init() {
         this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
-    
-     public String generateToken(UserDetailsImpl userDetails) {
-    Map<String, Object> claims = new HashMap<>();
-    
-    List<String> roles = userDetails.getUser().getRoles().stream()
-            .map(role -> role.getName().name())
-            .collect(Collectors.toList());
 
-    claims.put("roles", roles);
+    public String generateToken(UserDetailsImpl userDetails) {
+        Map<String, Object> claims = new HashMap<>();
 
-    return Jwts.builder()
-            .setClaims(claims)
-            .setSubject(userDetails.getUsername())
-            .setIssuedAt(new Date())
-            .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-            .signWith(key, SignatureAlgorithm.HS256)
-            .compact();
-}
-    
+        List<String> roles = userDetails.getUser().getRoles().stream()
+                .map(role -> role.getName().name())
+                .collect(Collectors.toList());
+
+        claims.put("roles", roles);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     public String getUsernameFromToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key).build()
@@ -58,7 +60,7 @@ public class JwtUtil {
                 .getBody()
                 .getSubject();
     }
-    
+
     public boolean validateJwtToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);

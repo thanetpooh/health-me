@@ -1,6 +1,9 @@
-export type Ingredient = {
+export type IngredientCategory = {
   id: number;
-  title: string;
+  name: string;
   category: 'meat' | 'seafood' | 'dairy' | 'vegetable' | 'fruit' | 'carb' | 'canned' | 'condiment' | 'spice' | 'other';
-  defaultChecked?: boolean;
+};
+
+export type GroupedIngredients = {
+  [categoryName: string]: IngredientCategory[];
 };

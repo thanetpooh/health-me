@@ -20,5 +20,4 @@ public class InstructionRequestDto {
         this.description = description;
     }
 
-
 }

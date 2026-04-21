@@ -9,8 +9,6 @@ const MenuDetail = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const imageUrl = `${import.meta.env.VITE_API_BASE_URL}/menus/image/${id}`;
-
   useEffect(() => {
     const fetchMenuById = async () => {
       if (!id) return;
@@ -19,6 +17,12 @@ const MenuDetail = () => {
       try {
         const response = await api.get<MenuDetailType>(`/menus/${id}`);
         setMenuItem(response.data);
+        console.log(
+          setMenuItem((prev) => {
+            console.log('ttt', prev);
+            return prev;
+          }),
+        );
       } catch (err) {
         console.error(err);
         setError('ไม่สามารถโหลดข้อมูลเมนูได้');
@@ -38,11 +42,8 @@ const MenuDetail = () => {
       <div className="flex flex-col items-center">
         <img
           className="w-full md:w-3/4 h-[400px] object-cover rounded-2xl shadow-lg"
-          src={imageUrl}
+          src={menuItem.imageUrl}
           alt={menuItem.name}
-          onError={(e) => {
-            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x400?text=No+Image';
-          }}
         />
       </div>
 

@@ -1,8 +1,8 @@
-import type { Ingredient } from '../../../types/ingredient';
+import type { IngredientCategory } from '../../../types/ingredient';
 
 type Props = {
   label: string;
-  ingredients: Ingredient[];
+  ingredients: IngredientCategory[];
   toggle: (id: number) => void;
 };
 
@@ -14,7 +14,7 @@ const CategoryFieldset = ({ label, ingredients, toggle }: Props) => {
         {ingredients.map((item) => (
           <label key={item.id} className="label">
             <input type="checkbox" className="checkbox" onChange={() => toggle(item.id)} />
-            {item.title}
+            {item.name}
           </label>
         ))}
       </fieldset>

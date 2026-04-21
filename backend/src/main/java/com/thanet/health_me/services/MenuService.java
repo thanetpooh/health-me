@@ -7,11 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thanet.health_me.dtos.IngredientRequestDto;
 import com.thanet.health_me.dtos.InstructionRequestDto;
 import com.thanet.health_me.dtos.MenuCreateRequestDto;
 import com.thanet.health_me.dtos.MenuDetailRequestDto;
 import com.thanet.health_me.dtos.MenuFullResponseDto;
-import com.thanet.health_me.dtos.MenuIngredientRequestDto;
 import com.thanet.health_me.dtos.MenuOverviewDto;
 import com.thanet.health_me.models.IngredientModel;
 import com.thanet.health_me.models.InstructionModel;
@@ -22,7 +22,6 @@ import com.thanet.health_me.repositories.IngredientRepository;
 import com.thanet.health_me.repositories.MenuRepository;
 
 import jakarta.transaction.Transactional;
-
 
 @Service
 public class MenuService {
@@ -35,42 +34,37 @@ public class MenuService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public List<MenuOverviewDto> getMenuOverviews(List<Long> ids){
+    public List<MenuOverviewDto> getMenuOverviews(List<Long> ids) {
         List<Long> safeIds = (ids == null) ? List.of() : ids;
-        return menuRepository.findMenuWithFilters(safeIds,safeIds.size());
+        return menuRepository.findMenuWithFilters(safeIds, safeIds.size());
     }
 
-    public ResponseEntity<MenuFullResponseDto> getMenuDetailById(Long id){
+    public ResponseEntity<MenuFullResponseDto> getMenuDetailById(Long id) {
         return menuRepository.findMenuDetailById(id)
-        .map(m -> {
-        MenuFullResponseDto dto = MenuFullResponseDto.from(m, objectMapper);
-        return ResponseEntity.ok(dto);
-    })
-    .orElse(ResponseEntity.notFound().build());
+                .map(m -> {
+                    MenuFullResponseDto dto = MenuFullResponseDto.from(m, objectMapper);
+                    return ResponseEntity.ok(dto);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @Transactional
     public MenuModel createMenu(MenuCreateRequestDto dto) {
         MenuModel menu = mapBasicMenuInfo(dto);
-                System.err.println("mapBasicMenuInfo2" + dto);
+        System.err.println("mapBasicMenuInfo2" + dto);
 
         System.err.println("mapBasicMenuInfo" + menu);
-        
 
         if (dto.getDetail() != null) {
             menu.setMenuDetail(mapMenuDetail(dto.getDetail()));
         }
 
         if (dto.getIngredients() != null) {
-            dto.getIngredients().forEach(ingDto -> 
-                menu.addIngredient(getOrCreateMenuIngredient(ingDto))
-            );
+            dto.getIngredients().forEach(ingDto -> menu.addIngredient(getOrCreateMenuIngredient(ingDto)));
         }
 
         if (dto.getInstructions() != null) {
-            dto.getInstructions().forEach(insDto -> 
-                menu.addInstruction(mapInstruction(insDto))
-            );
+            dto.getInstructions().forEach(insDto -> menu.addInstruction(mapInstruction(insDto)));
         }
 
         return menuRepository.save(menu);
@@ -94,14 +88,20 @@ public class MenuService {
         return detail;
     }
 
-    private MenuIngredientModel getOrCreateMenuIngredient(MenuIngredientRequestDto ingDto) {
+    private MenuIngredientModel getOrCreateMenuIngredient(IngredientRequestDto ingDto) {
         IngredientModel masterIng = ingredientRepository.findByName(ingDto.getName())
-                .orElseGet(() -> ingredientRepository.save(new IngredientModel(ingDto.getName())));
+                .orElseGet(() -> {
+                    IngredientModel newIng = new IngredientModel();
+                    newIng.setName(ingDto.getName());
+                    newIng.setCategory(ingDto.getCategory());
+                    newIng.setUnit(ingDto.getUnit());
+                    return ingredientRepository.save(newIng);
+                });
 
         MenuIngredientModel menuIng = new MenuIngredientModel();
         menuIng.setIngredientId(masterIng.getId());
         menuIng.setQuantity(ingDto.getQuantity());
-        menuIng.setUnit(ingDto.getUnit());
+
         return menuIng;
     }
 
@@ -111,5 +111,5 @@ public class MenuService {
         instruction.setDescription(insDto.getDescription());
         return instruction;
     }
-        
+
 }

@@ -1,32 +1,22 @@
 import { useEffect, useState, useMemo } from 'react';
 import MealCard from '../../meal/components/MealCard';
 import useMenus from '../../../hooks/useMenus';
-import api from '../../../lib/axiosInstance';
 import axios from 'axios';
+import IngredientItem from './IngredientItem';
+import type { IngredientCategory, GroupedIngredients } from '../../../types/ingredient';
+import MenuList from './MenuList';
 
-type Ingredient = {
-  id: number;
-  name: string;
-  category: string;
-};
-
-type GroupedIngredients = {
-  [categoryName: string]: Ingredient[];
-};
-
-const IngredientCategory = () => {
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+const RecipeFinder = () => {
+  const [ingredients, setIngredients] = useState<IngredientCategory[]>([]);
   const [catLoading, setCatLoading] = useState<boolean>(true);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const { menus, loading: menusLoading, error: menusError } = useMenus(selectedIds);
 
-
-
-   useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       setCatLoading(true);
       try {
-        const res = await axios.get("http://localhost:8080/api/ingredients")
+        const res = await axios.get('http://localhost:8080/api/ingredients');
         setIngredients(res.data);
       } catch (err) {
         console.error('Failed to fetch ingredients:', err);
@@ -36,8 +26,6 @@ const IngredientCategory = () => {
     };
     fetchData();
   }, []);
-
-
 
   const groupedIngredients = useMemo(() => {
     return ingredients.reduce<GroupedIngredients>((acc, curr) => {
@@ -49,11 +37,6 @@ const IngredientCategory = () => {
       return acc;
     }, {});
   }, [ingredients]);
-
-  const handleSelect = async (id: number): Promise<void> => {
-    const nextIds = selectedIds.includes(id) ? selectedIds.filter((i) => i !== id) : [...selectedIds, id];
-    setSelectedIds(nextIds);
-  };
 
   if (menusLoading || catLoading) {
     return (
@@ -88,28 +71,12 @@ const IngredientCategory = () => {
 
                     <div className="grid grid-cols-2 gap-2">
                       {items.map((item) => (
-                        <label
+                        <IngredientItem
                           key={item.id}
-                          className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer border transition-all duration-200 ${
-                            selectedIds.includes(item.id)
-                              ? 'border-primary bg-primary/5 shadow-sm'
-                              : 'border-base-200 hover:border-base-300 hover:bg-base-50'
-                          }`}
-                        >
-                          <input
-                            type="checkbox"
-                            className="checkbox checkbox-xs checkbox-primary rounded-sm border-2"
-                            checked={selectedIds.includes(item.id)}
-                            onChange={() => handleSelect(item.id)}
-                          />
-                          <span
-                            className={`text-[12px] truncate font-medium ${
-                              selectedIds.includes(item.id) ? 'text-primary font-bold' : 'text-base-content/70'
-                            }`}
-                          >
-                            {item.name}
-                          </span>
-                        </label>
+                          ingredient={item}
+                          selectedIds={selectedIds}
+                          setSelectedIds={setSelectedIds}
+                        />
                       ))}
                     </div>
                   </div>
@@ -130,7 +97,9 @@ const IngredientCategory = () => {
           </div>
         </aside>
 
-        <main className="lg:col-span-8 xl:col-span-9">
+        <MenuList data={menus} isLoading={menusLoading} error={menusError} />
+
+        {/* <main className="lg:col-span-8 xl:col-span-9">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
             <div>
               <h1 className="text-4xl font-black italic tracking-tighter text-base-content">ถึงเวลาทำอาหารแล้ว !!</h1>
@@ -172,10 +141,10 @@ const IngredientCategory = () => {
               <span className="font-bold">เกิดข้อผิดพลาดในการโหลดเมนู กรุณาลองใหม่อีกครั้ง</span>
             </div>
           )}
-        </main>
+        </main> */}
       </div>
     </div>
   );
 };
 
-export default IngredientCategory;
+export default RecipeFinder;

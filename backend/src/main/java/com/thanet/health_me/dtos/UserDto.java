@@ -7,7 +7,7 @@ public class UserDto {
     private String email;
 
     @NotBlank(message = "Email is required")
-    public UserDto(String name, String email){
+    public UserDto(String name, String email) {
         this.name = name;
         this.email = email;
     }
@@ -23,7 +23,7 @@ public class UserDto {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public void setEmail(String email) {
         this.email = email;
     }

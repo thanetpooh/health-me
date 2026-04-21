@@ -17,7 +17,7 @@ public class InstructionModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(name = "step_number")
     private Integer stepNumber;
 
@@ -28,17 +28,38 @@ public class InstructionModel {
     @JoinColumn(name = "menu_id")
     private MenuModel menu;
 
-    public InstructionModel() {}
+    public InstructionModel() {
+    }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public Integer getStepNumber() { return stepNumber; }
-    public void setStepNumber(Integer stepNumber) { this.stepNumber = stepNumber; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public Integer getStepNumber() {
+        return stepNumber;
+    }
 
-    public MenuModel getMenu() { return menu; }
-    public void setMenu(MenuModel menu) { this.menu = menu; }
+    public void setStepNumber(Integer stepNumber) {
+        this.stepNumber = stepNumber;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public MenuModel getMenu() {
+        return menu;
+    }
+
+    public void setMenu(MenuModel menu) {
+        this.menu = menu;
+    }
 }

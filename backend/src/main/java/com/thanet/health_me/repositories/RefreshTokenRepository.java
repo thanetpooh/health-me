@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshTokenModel, Long> {
     Optional<RefreshTokenModel> findByToken(String token);
+
     @Modifying
     @Transactional
     void deleteByUserModel(UserModel userModel);

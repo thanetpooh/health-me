@@ -24,12 +24,9 @@ import com.thanet.health_me.models.MenuModel;
 import com.thanet.health_me.services.CloudinaryService;
 import com.thanet.health_me.services.MenuService;
 
-
-
 @RestController
 @RequestMapping("/api/menus")
-public class MenuController{
-         
+public class MenuController {
 
     @Autowired
     private CloudinaryService cloudinaryService;
@@ -38,41 +35,41 @@ public class MenuController{
     private MenuService menuService;
 
     @GetMapping
-    public ResponseEntity<List<MenuOverviewDto>> getMenus(@RequestParam(required = false) List<Long> ids) { 
+    public ResponseEntity<List<MenuOverviewDto>> getMenus(@RequestParam(required = false) List<Long> ids) {
         List<MenuOverviewDto> results = menuService.getMenuOverviews(ids);
         return ResponseEntity.ok(results);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<MenuFullResponseDto> getMenuFullDetail(@PathVariable Long id) {
-     return menuService.getMenuDetailById(id);
-}
-
-   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<MenuModel> createMenu(
-        @RequestPart("menu") String menuJson, 
-        @RequestPart(value = "file", required = false) MultipartFile file) {
-    
-    try {
-        ObjectMapper objectMapper = new ObjectMapper();
-        MenuCreateRequestDto dto = objectMapper.readValue(menuJson, MenuCreateRequestDto.class);
-        
-        if (file != null && !file.isEmpty()) {
-            String imageUrl = cloudinaryService.uploadFile(file, "health_me_menus");
-            if (imageUrl != null) {
-                dto.setUrlImage(imageUrl);
-                dto.setNameImage(file.getOriginalFilename()); 
-            }
-        }
-
-        MenuModel createdMenu = menuService.createMenu(dto);
-
-        return new ResponseEntity<>(createdMenu, HttpStatus.CREATED);
-
-    } catch (JsonProcessingException e) {
-        return ResponseEntity.badRequest().build();
-    } catch (Exception e) {
-        return ResponseEntity.internalServerError().build();
+        return menuService.getMenuDetailById(id);
     }
-}
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> createMenu(
+            @RequestPart("menu") String menuJson,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            MenuCreateRequestDto dto = objectMapper.readValue(menuJson, MenuCreateRequestDto.class);
+
+            if (file != null && !file.isEmpty()) {
+                String imageUrl = cloudinaryService.uploadFile(file, "health_me_menus");
+                if (imageUrl != null) {
+                    dto.setUrlImage(imageUrl);
+                    dto.setNameImage(file.getOriginalFilename());
+                }
+            }
+
+            MenuModel createdMenu = menuService.createMenu(dto);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdMenu);
+
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }

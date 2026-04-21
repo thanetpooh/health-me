@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+
 @Entity
 @Table(name = "refresh_tokens")
 public class RefreshTokenModel {
@@ -28,7 +29,8 @@ public class RefreshTokenModel {
     @Column(nullable = false)
     private Instant expiryDate;
 
-    public RefreshTokenModel() {}
+    public RefreshTokenModel() {
+    }
 
     public Long getId() {
         return id;
@@ -61,7 +63,5 @@ public class RefreshTokenModel {
     public void setExpiryDate(Instant expiryDate) {
         this.expiryDate = expiryDate;
     }
-
-    
 
 }

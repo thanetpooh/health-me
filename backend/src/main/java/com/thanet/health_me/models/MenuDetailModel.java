@@ -17,7 +17,7 @@ public class MenuDetailModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
- 
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_id")
     private MenuModel menu;
@@ -34,14 +34,24 @@ public class MenuDetailModel {
     @Column(name = "calories")
     private Double calories;
 
-    public MenuDetailModel() {}
+    public MenuDetailModel() {
+    }
 
-    
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public MenuModel getMenu() { return menu; }
-    public void setMenu(MenuModel menu) { this.menu = menu; }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public MenuModel getMenu() {
+        return menu;
+    }
+
+    public void setMenu(MenuModel menu) {
+        this.menu = menu;
+    }
 
     public Double getProtein() {
         return protein;
@@ -75,5 +85,4 @@ public class MenuDetailModel {
         this.calories = calories;
     }
 
-   
 }

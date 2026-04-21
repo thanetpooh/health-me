@@ -19,35 +19,52 @@ public class MenuIngredientModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @JsonBackReference 
+
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_id")
     private MenuModel menu;
 
     @Column(name = "ingredient_id")
     private Long ingredientId;
-        
+
     @Column(name = "quantity")
     private Double quantity;
 
-    @Column(name = "unit")
-    private String unit;
+    public MenuIngredientModel() {
+    }
 
-    public MenuIngredientModel() {}
+    public Long getId() {
+        return id;
+    }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public void setId(Long id) {
+        this.id = id;
 
-    public MenuModel getMenu() { return menu; }
-    public void setMenu(MenuModel menu) { this.menu = menu; }
+    }
 
-    public Long getIngredientId() { return ingredientId; }
-    public void setIngredientId(Long ingredientId) { this.ingredientId = ingredientId; }
+    public MenuModel getMenu() {
+        return menu;
+    }
 
-    public Double getQuantity() { return quantity; }
-    public void setQuantity(Double quantity) { this.quantity = quantity; }
+    public void setMenu(MenuModel menu) {
+        this.menu = menu;
+    }
 
-    public String getUnit() { return unit; }
-    public void setUnit(String unit) { this.unit = unit; }
+    public Long getIngredientId() {
+        return ingredientId;
+    }
+
+    public void setIngredientId(Long ingredientId) {
+        this.ingredientId = ingredientId;
+    }
+
+    public Double getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Double quantity) {
+        this.quantity = quantity;
+    }
+
 }

@@ -2,17 +2,9 @@ import { useState } from 'react';
 import { useForm, type SubmitHandler, type SubmitErrorHandler } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import type { LoginForm,LoginResponse } from '../../types/login'; 
 
 import api from '../../lib/axiosInstance';
-
-type LoginResponse = {
-  token: string;
-};
-
-type LoginForm = {
-  email: string;
-  password: string;
-};
 
 const Login = () => {
   const navigate = useNavigate();

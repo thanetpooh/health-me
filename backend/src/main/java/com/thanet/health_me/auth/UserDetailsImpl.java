@@ -24,8 +24,7 @@ public class UserDetailsImpl implements UserDetails {
         Set<GrantedAuthority> authorities = new HashSet<>();
         for (RoleModel role : user.getRoles()) {
             authorities.add(
-                new SimpleGrantedAuthority("ROLE_" + role.getName().name())
-            );
+                    new SimpleGrantedAuthority("ROLE_" + role.getName().name()));
         }
         return authorities;
     }
@@ -39,9 +38,9 @@ public class UserDetailsImpl implements UserDetails {
     public String getPassword() {
         return user.getPassword();
     }
-    
+
     public UserModel getUser() {
         return user;
     }
-   
+
 }

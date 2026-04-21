@@ -21,7 +21,8 @@ public class RoleModel {
     @Column(length = 20, unique = true)
     private ERole name;
 
-    public RoleModel() {}
+    public RoleModel() {
+    }
 
     public ERole getName() {
         return name;
