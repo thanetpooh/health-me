@@ -1,12 +1,13 @@
 -- =========================
 -- MENU
 -- =========================
-INSERT INTO menu (id, name, description, name_image, url_image) VALUES
+INSERT INTO menus (id, name, description, name_image, url_image) VALUES
 (1, 'ข้าวมันไก่', 'เมนูอาหารจานเดียว ไก่นุ่มฉ่ำ เสิร์ฟพร้อมข้าวมันหอม', 'hainanese-chicken-rice.jpg', 'https://res.cloudinary.com/duqa62ztd/image/upload/v1776863388/hainanese-chicken-rice_v5kqji.webp'),
 (2, 'แกงเขียวหวานไก่', 'แกงไทยรสเข้มข้น หอมกะทิและเครื่องแกง', 'green-curry-with-chicken.jpg', 'https://res.cloudinary.com/duqa62ztd/image/upload/v1776863389/green-curry-with-chicken_rr3nnw.webp'),
 (3, 'ผัดไทยกุ้งสด', 'อาหารไทยยอดนิยม รสเปรี้ยวหวานกลมกล่อม', 'pad-thai-with-fresh-shrimp.jpg', 'https://res.cloudinary.com/duqa62ztd/image/upload/v1776863388/pad-thai-with-fresh-shrimp_r166sp.webp'),
 (4, 'ส้มตำไทย', 'อาหารอีสานรสจัด เปรี้ยว หวาน เค็ม เผ็ด', 'thai-papaya-salad.jpg', 'https://res.cloudinary.com/duqa62ztd/image/upload/v1776863389/thai-papaya-salad_pvnxbe.webp'),
-(5, 'ต้มยำกุ้ง', 'ซุปไทยรสแซ่บ เปรี้ยว เผ็ด หอมสมุนไพร', 'tom-yum-kung.jpg', 'https://res.cloudinary.com/duqa62ztd/image/upload/v1776863389/tom-yum-kung_ghcmql.webp');
+(5, 'ต้มยำกุ้ง', 'ซุปไทยรสแซ่บ เปรี้ยว เผ็ด หอมสมุนไพร', 'tom-yum-kung.jpg', 'https://res.cloudinary.com/duqa62ztd/image/upload/v1776863389/tom-yum-kung_ghcmql.webp')
+ON CONFLICT (id) DO NOTHING;
 
 
 -- =========================
@@ -17,13 +18,14 @@ INSERT INTO menu_detail (id, menu_id, calories, protein, fat, carbohydrate) VALU
 (2, 2, 450, 25, 30, 15),
 (3, 3, 550, 30, 18, 70),
 (4, 4, 120, 5, 3, 20),
-(5, 5, 300, 25, 10, 15);
+(5, 5, 300, 25, 10, 15)
+ON CONFLICT (id) DO NOTHING;
 
 
 -- =========================
 -- INGREDIENT MASTER
 -- =========================
-INSERT INTO ingredient (id, name, category, unit) VALUES
+INSERT INTO ingredients (id, ingredient_name, category, unit) VALUES
 (1, 'เนื้อไก่', 'เนื้อสัตว์', 'กรัม'),
 (2, 'ข้าวหอมมะลิ', 'ข้าว', 'กรัม'),
 (3, 'กระเทียม', 'เครื่องปรุง', 'กลีบ'),
@@ -48,13 +50,14 @@ INSERT INTO ingredient (id, name, category, unit) VALUES
 (22, 'มะนาว', 'ผลไม้', 'ลูก'),
 (23, 'น้ำซุป', 'เครื่องปรุง', 'มิลลิลิตร'),
 (24, 'ตะไคร้', 'สมุนไพร', 'ต้น'),
-(25, 'ใบมะกรูด', 'สมุนไพร', 'ใบ');
+(25, 'ใบมะกรูด', 'สมุนไพร', 'ใบ')
+ON CONFLICT (id) DO NOTHING;
 
 
 -- =========================
 -- MENU INGREDIENT
 -- =========================
-INSERT INTO menu_ingredient (id, menu_id, ingredient_id, quantity) VALUES
+INSERT INTO menu_ingredients (id, menu_id, ingredient_id, quantity) VALUES
 -- ข้าวมันไก่
 (1,1,1,250),(2,1,2,200),(3,1,3,5),(4,1,4,20),(5,1,5,2),(6,1,6,1),
 
@@ -68,13 +71,15 @@ INSERT INTO menu_ingredient (id, menu_id, ingredient_id, quantity) VALUES
 (19,4,18,200),(20,4,19,2),(21,4,20,50),(22,4,21,5),(23,4,22,2),(24,4,15,1),(25,4,16,1),
 
 -- ต้มยำกุ้ง
-(26,5,12,200),(27,5,23,300),(28,5,24,2),(29,5,25,3),(30,5,3,3),(31,5,21,5),(32,5,22,2);
+(26,5,12,200),(27,5,23,300),(28,5,24,2),(29,5,25,3),(30,5,3,3),(31,5,21,5),(32,5,22,2)
+
+ON CONFLICT (id) DO NOTHING;
 
 
 -- =========================
 -- INSTRUCTION
 -- =========================
-INSERT INTO instruction (id, menu_id, step_number, description) VALUES
+INSERT INTO instructions (id, menu_id, step_number, description) VALUES
 -- ข้าวมันไก่
 (1,1,1,'ต้มไก่จนสุก'),(2,1,2,'หุงข้าวด้วยน้ำต้มไก่'),(3,1,3,'หั่นไก่และจัดเสิร์ฟ'),
 
@@ -88,4 +93,6 @@ INSERT INTO instruction (id, menu_id, step_number, description) VALUES
 (10,4,1,'ตำพริกและกระเทียม'),(11,4,2,'ใส่มะละกอและปรุงรส'),(12,4,3,'คลุกให้เข้ากัน'),
 
 -- ต้มยำกุ้ง
-(13,5,1,'ต้มน้ำซุปกับสมุนไพร'),(14,5,2,'ใส่กุ้ง'),(15,5,3,'ปรุงรสด้วยน้ำปลาและมะนาว');
+(13,5,1,'ต้มน้ำซุปกับสมุนไพร'),(14,5,2,'ใส่กุ้ง'),(15,5,3,'ปรุงรสด้วยน้ำปลาและมะนาว')
+
+ON CONFLICT (id) DO NOTHING;
