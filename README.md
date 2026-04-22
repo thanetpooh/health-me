@@ -1,17 +1,36 @@
 # Health-Me 🍳
 
-**Health-Me** is a web application for people who love cooking but have limited time. It helps you find easy recipes and manage your shopping lists in one place.
-
----
-
-## Why I built this project? (The Problem)
-I noticed a common problem that many of us face:
-* **Food Waste:** We often have ingredients left in the fridge but don't know what to cook with them.
-* **Time Consuming:** Searching for the right recipe online takes too much time.
-
----
+A simple app that helps you figure out what to cook based on what's already in your fridge — so you waste less food and spend less time thinking.
 
 ## Tech Stack
-* **Frontend:** React.js, Tailwind css, daisyUI
-* **Backend:** Java Spring Boot
-* **Database:** PostgreSQL
+
+- **Frontend:** React + TypeScript, Tailwind CSS, daisyUI
+- **Backend:** Spring Boot (Java)
+- **Database:** PostgreSQL
+- **Infra:** Docker Compose
+
+## How to Run
+
+**1. Copy the env file**
+```bash
+cp .env.example .env
+```
+Edit if needed. Cloudinary is optional — just leave it blank if you don't need image upload.
+
+**2. Start everything**
+```bash
+docker-compose up --build
+```
+
+**3. Open the app**
+- Frontend → http://localhost:5173
+- Backend → http://localhost:8080
+- DB → localhost:5432
+
+Tables and sample data are created automatically on first run.
+
+## Notes
+
+- Backend: Spring Boot via Maven
+- Frontend: Vite dev server
+- Everything runs through Docker so you don't need to set up anything manually
