@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import api from '../lib/axiosInstance';
 
 export type Ingredient = {
@@ -38,28 +38,36 @@ export type MenuDetail = MenuSummary & {
 
 const useMenus = (ingredientIds: number[]) => {
   const [menus, setMenus] = useState<MenuSummary[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
   const idsParam = useMemo(() => ingredientIds.join(','), [ingredientIds]);
 
   useEffect(() => {
+    let isCancelled = false;
+
     const fetchData = async () => {
       try {
-        setLoading(true);
-        const res = await api.get<MenuSummary[]>('/menus', {
-          params: { ids: idsParam },
-        });
-        setMenus(res.data);
+        setIsUpdating(true);
+        const res = await api.get('/menus', { params: { ids: idsParam } });
+
+        if (!isCancelled) {
+          setMenus(res.data);
+        }
       } catch (err) {
-        setError('ไม่สามารถโหลดข้อมูลเมนูได้');
+        if (!isCancelled) setError('...');
       } finally {
-        setLoading(false);
+        if (!isCancelled) setIsUpdating(false);
       }
     };
 
-    void fetchData();
+    fetchData();
+    return () => {
+      isCancelled = true;
+    };
   }, [idsParam]);
 
-  return { menus, loading, error };
+  return { menus, isUpdating, error };
 };
+
 export default useMenus;

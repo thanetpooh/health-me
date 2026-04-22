@@ -28,7 +28,12 @@ const MenuDetail = () => {
     void fetchMenuById();
   }, [id]);
 
-  if (loading) return <div className="text-center p-20">กำลังปรุงข้อมูล...</div>;
+  if (loading)
+    return (
+      <div className="flex flex-col justify-center items-center p-20 gap-4">
+        <span className="loading loading-spinner loading-lg text-primary"></span>
+      </div>
+    );
   if (error || !menuItem) return <div className="text-center p-20 text-red-500 font-bold">{error}</div>;
 
   return (
