@@ -34,7 +34,7 @@ public class WebSecurityConfig {
         return new AuthTokenFilter();
     }
 
-    @Value("${app.cors.allowed-origins:http://localhost:5173}")
+    @Value("#{'${app.cors.allowed-origins:http://localhost:5173}'.split(',')}")
     private List<String> allowedOrigins;
 
     @Bean
