@@ -1,4 +1,3 @@
-import React from 'react';
 import type { MenuSummary } from '../../../hooks/useMenus';
 import MealCard from '../../meal/components/MealCard';
 

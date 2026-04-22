@@ -49,12 +49,7 @@ const useMenus = (ingredientIds: number[]) => {
         const res = await api.get<MenuSummary[]>('/menus', {
           params: { ids: idsParam },
         });
-        console.log('The data is', res.data);
         setMenus(res.data);
-        setMenus((prev) => {
-          console.log('menus is', prev);
-          return prev;
-        });
       } catch (err) {
         setError('ไม่สามารถโหลดข้อมูลเมนูได้');
       } finally {

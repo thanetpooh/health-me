@@ -1,7 +1,7 @@
 export type IngredientCategory = {
   id: number;
   name: string;
-  category: 'meat' | 'seafood' | 'dairy' | 'vegetable' | 'fruit' | 'carb' | 'canned' | 'condiment' | 'spice' | 'other';
+  category: string;
 };
 
 export type GroupedIngredients = {

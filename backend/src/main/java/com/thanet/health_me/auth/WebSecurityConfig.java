@@ -3,6 +3,7 @@ package com.thanet.health_me.auth;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -33,6 +34,9 @@ public class WebSecurityConfig {
         return new AuthTokenFilter();
     }
 
+    @Value("${app.cors.allowed-origins:http://localhost:5173}")
+    private List<String> allowedOrigins;
+
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -55,8 +59,9 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(HttpMethod.GET, "/api/menus/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/ingredients/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/menus/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/api/menus/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/menus/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/menus/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/menus/**").hasRole("ADMIN")
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/user/test/all").permitAll()
                         .requestMatchers("/api/user/test/admin").hasRole("ADMIN")
@@ -71,7 +76,7 @@ public class WebSecurityConfig {
     public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
         org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedOrigins(allowedOrigins);
         configuration.setAllowedMethods(java.util.Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(java.util.Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
         configuration.setAllowCredentials(true);

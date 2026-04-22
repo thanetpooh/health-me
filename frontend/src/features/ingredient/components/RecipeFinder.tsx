@@ -1,10 +1,9 @@
 import { useEffect, useState, useMemo } from 'react';
-import MealCard from '../../meal/components/MealCard';
 import useMenus from '../../../hooks/useMenus';
-import axios from 'axios';
 import IngredientItem from './IngredientItem';
 import type { IngredientCategory, GroupedIngredients } from '../../../types/ingredient';
 import MenuList from './MenuList';
+import api from '../../../lib/axiosInstance';
 
 const RecipeFinder = () => {
   const [ingredients, setIngredients] = useState<IngredientCategory[]>([]);
@@ -16,7 +15,7 @@ const RecipeFinder = () => {
     const fetchData = async () => {
       setCatLoading(true);
       try {
-        const res = await axios.get('http://localhost:8080/api/ingredients');
+        const res = await api.get('/ingredients');
         setIngredients(res.data);
       } catch (err) {
         console.error('Failed to fetch ingredients:', err);
@@ -98,50 +97,6 @@ const RecipeFinder = () => {
         </aside>
 
         <MenuList data={menus} isLoading={menusLoading} error={menusError} />
-
-        {/* <main className="lg:col-span-8 xl:col-span-9">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
-            <div>
-              <h1 className="text-4xl font-black italic tracking-tighter text-base-content">ถึงเวลาทำอาหารแล้ว !!</h1>
-              <p className="text-sm opacity-60 font-medium">เมนูที่คุณสามารถรังสรรค์ได้จากวัตถุดิบในตู้เย็น</p>
-            </div>
-            <div className="badge badge-outline badge-lg opacity-50 px-4 py-3 font-bold">{menus?.length || 0} เมนู</div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-            {menus?.map((item: any, index: number) => (
-              <div key={index} className="hover:translate-y-[-4px] transition-transform duration-300">
-                <MealCard menu={item} />
-              </div>
-            ))}
-          </div>
-
-          {(!menus || menus.length === 0) && !menusError && (
-            <div className="flex flex-col items-center justify-center py-24 bg-base-100 rounded-3xl border-2 border-dashed border-base-300">
-              <p className="text-lg font-black opacity-20 uppercase tracking-[0.2em]">No matching menus</p>
-              <p className="text-xs opacity-20 font-bold mt-2">TRY SELECTING MORE INGREDIENTS</p>
-            </div>
-          )}
-
-          {menusError && (
-            <div className="alert alert-error shadow-lg rounded-2xl">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="stroke-current shrink-0 h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span className="font-bold">เกิดข้อผิดพลาดในการโหลดเมนู กรุณาลองใหม่อีกครั้ง</span>
-            </div>
-          )}
-        </main> */}
       </div>
     </div>
   );

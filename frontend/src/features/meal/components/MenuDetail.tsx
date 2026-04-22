@@ -17,12 +17,6 @@ const MenuDetail = () => {
       try {
         const response = await api.get<MenuDetailType>(`/menus/${id}`);
         setMenuItem(response.data);
-        console.log(
-          setMenuItem((prev) => {
-            console.log('ttt', prev);
-            return prev;
-          }),
-        );
       } catch (err) {
         console.error(err);
         setError('ไม่สามารถโหลดข้อมูลเมนูได้');
