@@ -1,6 +1,7 @@
 package com.thanet.health_me.controllers;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -21,7 +22,9 @@ import com.thanet.health_me.auth.UserDetailsImpl;
 import com.thanet.health_me.dtos.JwtResponseDto;
 import com.thanet.health_me.dtos.LoginRequestDto;
 import com.thanet.health_me.dtos.RegisterRequestDto;
+import com.thanet.health_me.models.ERole;
 import com.thanet.health_me.models.RefreshTokenModel;
+import com.thanet.health_me.models.RoleModel;
 import com.thanet.health_me.models.UserModel;
 import com.thanet.health_me.repositories.RefreshTokenRepository;
 import com.thanet.health_me.repositories.RoleRepository;
@@ -80,15 +83,23 @@ public class AuthController {
 
     @PostMapping("/register")
     public String registerUser(@RequestBody RegisterRequestDto user) {
+
         if (userRepository.existsByEmail(user.getEmail())) {
             return "Error: Username/Email is already taken!";
         }
-        UserModel newUser;
-        newUser = new UserModel(
+
+        UserModel newUser = new UserModel(
                 user.getName(),
                 user.getEmail(),
                 encoder.encode(user.getPassword()));
+
+        RoleModel userRole = roleRepository.findByName(ERole.ROLE_USER)
+                .orElseThrow(() -> new RuntimeException("Error: Role USER not found."));
+
+        newUser.setRoles(Set.of(userRole));
+
         userRepository.save(newUser);
+
         return "User registered successfully!";
     }
 

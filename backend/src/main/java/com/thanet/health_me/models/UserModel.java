@@ -30,9 +30,6 @@ public class UserModel {
 
     private String password;
 
-    @Column(name = "role", columnDefinition = "VARCHAR(20) DEFAULT 'USER'")
-    private String role;
-
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<RoleModel> roles = new HashSet<>();
