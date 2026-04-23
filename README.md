@@ -1,6 +1,6 @@
 # Health-Me 🍳
 
-A simple app that helps you figure out what to cook based on what's already in your fridge — so you waste less food and spend less time thinking.
+A web app that helps you figure out what to cook based on what's already in your fridge — so you waste less food and spend less time thinking.
 
 <img width="1341" height="849" alt="Image" src="https://github.com/user-attachments/assets/c7f3c8e7-16be-433c-afe4-12db77e9e04e" />
 
