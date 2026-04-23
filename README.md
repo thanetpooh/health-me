@@ -2,6 +2,8 @@
 
 A simple app that helps you figure out what to cook based on what's already in your fridge — so you waste less food and spend less time thinking.
 
+![Uploading Animation.gif…]()
+
 ## Tech Stack
 
 - **Frontend:** React + TypeScript, Tailwind CSS, daisyUI
